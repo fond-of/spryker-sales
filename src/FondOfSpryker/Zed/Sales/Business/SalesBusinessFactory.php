@@ -4,6 +4,7 @@ namespace FondOfSpryker\Zed\Sales\Business;
 
 use FondOfSpryker\Zed\Sales\Business\Model\Order\OrderHydrator;
 use Spryker\Zed\Sales\Business\Model\Order\OrderHydratorInterface;
+use Spryker\Zed\Sales\Business\Model\Order\OrderReferenceGenerator;
 use Spryker\Zed\Sales\Business\SalesBusinessFactory as SprykerSalesBusinessFactory;
 
 /**
