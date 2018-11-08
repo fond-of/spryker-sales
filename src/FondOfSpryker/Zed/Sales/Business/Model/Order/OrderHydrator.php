@@ -73,11 +73,19 @@ class OrderHydrator extends BaseOrderHydrator
     {
         parent::hydrateOrderTotals($orderEntity, $orderTransfer);
 
-        $total = $orderTransfer->getTotals();
+        $totals = $orderTransfer->getTotals();
+        $taxTotal = $totals->getTaxTotal();
+        $taxTotalAmount->getAmount();
+
+        if ($taxTotalAmount == 0) {
+            $taxTotal->setTaxRate(0);
+            return;
+        }
+
         $taxRate = $this->moneyPlugin->convertDecimalToInteger(
-            $this->priceCalculationHelper->getTaxRateFromPrice($total->getGrandTotal(), $total->getTaxTotal()->getAmount())
+            $this->priceCalculationHelper->getTaxRateFromPrice($totals->getGrandTotal(), $taxTotalAmount)
         );
 
-        $orderTransfer->getTotals()->getTaxTotal()->setTaxRate($taxRate);
+        $taxTotal->setTaxRate($taxRate);
     }
 }
