@@ -75,9 +75,9 @@ class OrderHydrator extends BaseOrderHydrator
 
         $totals = $orderTransfer->getTotals();
         $taxTotal = $totals->getTaxTotal();
-        $taxTotalAmount->getAmount();
+        $taxTotalAmount = $taxTotal->getAmount();
 
-        if ($taxTotalAmount == 0) {
+        if ($taxTotalAmount <= 0) {
             $taxTotal->setTaxRate(0);
             return;
         }
