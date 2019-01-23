@@ -25,6 +25,7 @@ class OrderHydrator extends BaseOrderHydrator
 
     /**
      * OrderHydrator constructor.
+     *
      * @param \Spryker\Zed\Sales\Persistence\SalesQueryContainerInterface $queryContainer
      * @param \Spryker\Zed\Sales\Dependency\Facade\SalesToOmsInterface $omsFacade
      * @param \Spryker\Zed\Sales\Dependency\Plugin\HydrateOrderPluginInterface[] $hydrateOrderPlugins
@@ -34,7 +35,7 @@ class OrderHydrator extends BaseOrderHydrator
     public function __construct(
         SalesQueryContainerInterface $queryContainer,
         SalesToOmsInterface $omsFacade,
-        array $hydrateOrderPlugins = [],
+        array $hydrateOrderPlugins,
         MoneyPluginInterface $moneyPlugin,
         PriceCalculationHelperInterface $priceCalculationHelper
     ) {
@@ -61,7 +62,6 @@ class OrderHydrator extends BaseOrderHydrator
 
         return $orderTransfer;
     }
-
 
     /**
      * @param \Orm\Zed\Sales\Persistence\SpySalesOrder $orderEntity

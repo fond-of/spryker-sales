@@ -2,9 +2,9 @@
 
 namespace FondOfSpryker\Zed\Sales;
 
+use FondOfSpryker\Shared\Sales\SalesConstants;
 use Generated\Shared\Transfer\SequenceNumberSettingsTransfer;
 use Spryker\Shared\Kernel\Store;
-use FondOfSpryker\Shared\Sales\SalesConstants;
 use Spryker\Zed\Sales\SalesConfig as SprykerSalesConfig;
 
 class SalesConfig extends SprykerSalesConfig

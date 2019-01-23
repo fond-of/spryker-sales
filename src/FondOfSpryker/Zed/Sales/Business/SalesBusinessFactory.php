@@ -3,10 +3,11 @@
 namespace FondOfSpryker\Zed\Sales\Business;
 
 use FondOfSpryker\Zed\Sales\Business\Model\Order\OrderHydrator;
+use FondOfSpryker\Zed\Sales\Business\Model\Order\SalesOrderSaver;
 use Pyz\Zed\Sales\SalesDependencyProvider;
-use Spryker\Shared\Sales\SalesConstants;
 use Spryker\Zed\Sales\Business\Model\Order\OrderHydratorInterface;
 use Spryker\Zed\Sales\Business\Model\Order\OrderReferenceGenerator;
+use Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaverInterface;
 use Spryker\Zed\Sales\Business\SalesBusinessFactory as SprykerSalesBusinessFactory;
 use Spryker\Zed\Tax\Business\Model\PriceCalculationHelper;
 
@@ -56,5 +57,31 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
     public function createPriceCalculationHelper()
     {
         return new PriceCalculationHelper();
+    }
+
+    /**
+     * @return \Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaverInterface
+     */
+    public function createSalesOrderSaver(): SalesOrderSaverInterface
+    {
+        return new SalesOrderSaver(
+            $this->getCountryFacade(),
+            $this->getOmsFacade(),
+            $this->createReferenceGenerator(),
+            $this->getConfig(),
+            $this->getLocaleQueryContainer(),
+            $this->getStore(),
+            $this->getOrderExpanderPreSavePlugins(),
+            $this->createSalesOrderSaverPluginExecutor(),
+            $this->createOrderItemMapper()
+        );
+    }
+
+    /**
+     * @return \FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface
+     */
+    public function getCountryFacade()
+    {
+        return $this->getProvidedDependency(SalesDependencyProvider::FACADE_COUNTRY);
     }
 }
