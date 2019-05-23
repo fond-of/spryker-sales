@@ -3,6 +3,7 @@
 namespace FondOfSpryker\Zed\Sales\Business;
 
 use FondOfSpryker\Zed\Sales\Business\Model\Order\OrderHydrator;
+use FondOfSpryker\Zed\Sales\Business\Model\Order\OrderReader;
 use FondOfSpryker\Zed\Sales\Business\Model\Order\SalesOrderSaver;
 use Pyz\Zed\Sales\SalesDependencyProvider;
 use Spryker\Zed\Sales\Business\Model\Order\OrderHydratorInterface;
@@ -27,6 +28,17 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
             $this->getHydrateOrderPlugins(),
             $this->createMoneyPlugin(),
             $this->createPriceCalculationHelper()
+        );
+    }
+
+    /**
+     * @return \Spryker\Zed\Sales\Business\Model\Order\OrderReaderInterface
+     */
+    public function createOrderReader()
+    {
+        return new OrderReader(
+            $this->getQueryContainer(),
+            $this->createOrderHydrator()
         );
     }
 
