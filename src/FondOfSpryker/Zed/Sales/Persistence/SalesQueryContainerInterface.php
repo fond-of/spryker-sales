@@ -13,4 +13,11 @@ interface SalesQueryContainerInterface extends SprykerSalesQueryContainerInterfa
      * @return \Orm\Zed\Sales\Persistence\SpySalesOrderQuery
      */
     public function querySalesOrderByOrderReference(string $orderReference): SpySalesOrderQuery;
+
+    /**
+     * @param string $customerReference
+     *
+     * @return \Orm\Zed\Sales\Persistence\SpySalesOrderQuery
+     */
+    public function querySalesOrderByCustomerReference(string $customerReference): SpySalesOrderQuery;
 }

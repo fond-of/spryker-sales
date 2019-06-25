@@ -13,6 +13,7 @@ use Spryker\Zed\Sales\Business\SalesBusinessFactory as SprykerSalesBusinessFacto
 use Spryker\Zed\Tax\Business\Model\PriceCalculationHelper;
 
 /**
+ * @method \FondOfSpryker\Zed\Sales\Persistence\SalesQueryContainerInterface getQueryContainer()
  * @method \FondOfSpryker\Zed\Sales\SalesConfig getConfig()
  */
 class SalesBusinessFactory extends SprykerSalesBusinessFactory
@@ -32,7 +33,7 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
     }
 
     /**
-     * @return \Spryker\Zed\Sales\Business\Model\Order\OrderReaderInterface
+     * @return \FondOfSpryker\Zed\Sales\Business\Model\Order\OrderReaderInterface
      */
     public function createOrderReader()
     {

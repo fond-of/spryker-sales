@@ -2,6 +2,7 @@
 
 namespace FondOfSpryker\Zed\Sales\Business;
 
+use Generated\Shared\Transfer\OrderListTransfer;
 use Generated\Shared\Transfer\QuoteTransfer;
 use Generated\Shared\Transfer\SaveOrderTransfer;
 use Orm\Zed\Sales\Persistence\SpySalesOrder;
@@ -33,5 +34,17 @@ class SalesFacade extends SprykerSalesFacade implements SalesFacadeInterface
             ->createOrderReader()
             ->findSalesOrderByOrderReference($orderReference);
 
+    }
+
+    /**
+     * @param string $customerReference
+     *
+     * @return \Generated\Shared\Transfer\OrderListTransfer
+     */
+    public function findOrdersByCustomerReference(OrderListTransfer $orderListTransfer, string $customerReference): OrderListTransfer
+    {
+        return $this->getFactory()
+            ->createOrderReader()
+            ->findOrdersByCustomerReference($orderListTransfer, $customerReference);
     }
 }

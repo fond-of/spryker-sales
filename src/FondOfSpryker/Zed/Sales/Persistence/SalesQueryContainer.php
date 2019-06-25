@@ -25,4 +25,19 @@ class SalesQueryContainer extends SprykerSalesQueryContainer implements SalesQue
         return $query;
     }
 
+    /**
+     * @param string $customerReference
+     *
+     * @return \Orm\Zed\Sales\Persistence\SpySalesOrderQuery
+     *
+     * @throws \Spryker\Zed\Propel\Business\Exception\AmbiguousComparisonException
+     */
+    public function querySalesOrderByCustomerReference(string $customerReference): SpySalesOrderQuery
+    {
+        $query = $this->getFactory()->createSalesOrderQuery();
+        $query->filterByCustomerReference($customerReference);
+
+        return $query;
+    }
+
 }
