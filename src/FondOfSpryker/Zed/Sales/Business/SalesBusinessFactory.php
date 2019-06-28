@@ -5,7 +5,7 @@ namespace FondOfSpryker\Zed\Sales\Business;
 use FondOfSpryker\Zed\Sales\Business\Model\Order\OrderHydrator;
 use FondOfSpryker\Zed\Sales\Business\Model\Order\OrderReader;
 use FondOfSpryker\Zed\Sales\Business\Model\Order\SalesOrderSaver;
-use Pyz\Zed\Sales\SalesDependencyProvider;
+use FondOfSpryker\Zed\Sales\SalesDependencyProvider;
 use Spryker\Zed\Sales\Business\Model\Order\OrderHydratorInterface;
 use Spryker\Zed\Sales\Business\Model\Order\OrderReferenceGenerator;
 use Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaverInterface;
@@ -86,7 +86,8 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
             $this->getStore(),
             $this->getOrderExpanderPreSavePlugins(),
             $this->createSalesOrderSaverPluginExecutor(),
-            $this->createOrderItemMapper()
+            $this->createOrderItemMapper(),
+            $this->getOrderPostCreatePlugins()
         );
     }
 
@@ -96,5 +97,13 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
     public function getCountryFacade()
     {
         return $this->getProvidedDependency(SalesDependencyProvider::FACADE_COUNTRY);
+    }
+
+    /**
+     * @return \FondOfSpryker\Zed\Sales\Dependency\Plugin\OrderCreatePluginInterface[]
+     */
+    public function getOrderPostCreatePlugins()
+    {
+        return $this->getProvidedDependency(SalesDependencyProvider::PLUGINS_ORDER_POST_CREATE);
     }
 }

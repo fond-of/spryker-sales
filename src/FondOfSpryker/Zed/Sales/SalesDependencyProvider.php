@@ -11,6 +11,8 @@ class SalesDependencyProvider extends SprykerSalesDependencyProvider
 {
     const PLUGIN_MONEY = 'PLUGIN_MONEY';
 
+    const PLUGINS_ORDER_POST_CREATE = 'PLUGINS_ORDER_POST_CREATE';
+
     /**
      * @param \Spryker\Zed\Kernel\Container $container
      *
@@ -20,6 +22,7 @@ class SalesDependencyProvider extends SprykerSalesDependencyProvider
     {
         $container = parent::provideBusinessLayerDependencies($container);
         $container = $this->provideMoneyPlugin($container);
+        $container = $this->addOrderPostCreatePlugins($container);
         $container = $this->addCountryFacade($container);
 
         return $container;
@@ -51,5 +54,29 @@ class SalesDependencyProvider extends SprykerSalesDependencyProvider
         };
 
         return $container;
+    }
+
+    /**
+     * @param \Spryker\Zed\Kernel\Container $container
+     *
+     * @return \Spryker\Zed\Kernel\Container
+     */
+    protected function addOrderPostCreatePlugins(Container $container): Container
+    {
+        $container[static::PLUGINS_ORDER_POST_CREATE] = function () {
+            return $this->getOrderPostCreatePlugins();
+        };
+
+        return $container;
+    }
+
+    /**
+     * @param \Spryker\Zed\Kernel\Container $container
+     *
+     * @return \Spryker\Zed\Sales\Dependency\Plugin\OrderSaverPluginInterface[]
+     */
+    protected function getOrderPostCreatePlugins()
+    {
+        return [];
     }
 }

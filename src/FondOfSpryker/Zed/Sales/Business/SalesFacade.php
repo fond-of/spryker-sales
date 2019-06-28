@@ -3,6 +3,8 @@
 namespace FondOfSpryker\Zed\Sales\Business;
 
 use Generated\Shared\Transfer\OrderListTransfer;
+use Generated\Shared\Transfer\OrderResponseTransfer;
+use Generated\Shared\Transfer\OrderTransfer;
 use Generated\Shared\Transfer\QuoteTransfer;
 use Generated\Shared\Transfer\SaveOrderTransfer;
 use Orm\Zed\Sales\Persistence\SpySalesOrder;
@@ -13,6 +15,18 @@ use Spryker\Zed\Sales\Business\SalesFacade as SprykerSalesFacade;
  */
 class SalesFacade extends SprykerSalesFacade implements SalesFacadeInterface
 {
+    /**
+     * @param \Generated\Shared\Transfer\OrderTransfer $orderTransfer
+     * @param array $orderItemCollection
+     * @return \Generated\Shared\Transfer\OrderResponseTransfer
+     */
+    public function addOrder(OrderTransfer $orderTransfer): OrderResponseTransfer
+    {
+        return $this->getFactory()
+            ->createSalesOrderSaver()
+            ->createSalesOrder($orderTransfer);
+    }
+
     /**
      * @return void
      */
