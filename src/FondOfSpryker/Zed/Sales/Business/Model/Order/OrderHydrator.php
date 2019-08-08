@@ -25,6 +25,7 @@ class OrderHydrator extends BaseOrderHydrator
 
     /**
      * OrderHydrator constructor.
+     *
      * @param \Spryker\Zed\Sales\Persistence\SalesQueryContainerInterface $queryContainer
      * @param \Spryker\Zed\Sales\Dependency\Facade\SalesToOmsInterface $omsFacade
      * @param \Spryker\Zed\Sales\Dependency\Plugin\HydrateOrderPluginInterface[] $hydrateOrderPlugins
@@ -34,7 +35,7 @@ class OrderHydrator extends BaseOrderHydrator
     public function __construct(
         SalesQueryContainerInterface $queryContainer,
         SalesToOmsInterface $omsFacade,
-        array $hydrateOrderPlugins = [],
+        array $hydrateOrderPlugins,
         MoneyPluginInterface $moneyPlugin,
         PriceCalculationHelperInterface $priceCalculationHelper
     ) {
@@ -62,7 +63,6 @@ class OrderHydrator extends BaseOrderHydrator
         return $orderTransfer;
     }
 
-
     /**
      * @param \Orm\Zed\Sales\Persistence\SpySalesOrder $orderEntity
      * @param \Generated\Shared\Transfer\OrderTransfer $orderTransfer
@@ -73,11 +73,19 @@ class OrderHydrator extends BaseOrderHydrator
     {
         parent::hydrateOrderTotals($orderEntity, $orderTransfer);
 
-        $total = $orderTransfer->getTotals();
+        $totals = $orderTransfer->getTotals();
+        $taxTotal = $totals->getTaxTotal();
+        $taxTotalAmount = $taxTotal->getAmount();
+
+        if ($taxTotalAmount <= 0) {
+            $taxTotal->setTaxRate(0);
+            return;
+        }
+
         $taxRate = $this->moneyPlugin->convertDecimalToInteger(
-            $this->priceCalculationHelper->getTaxRateFromPrice($total->getGrandTotal(), $total->getTaxTotal()->getAmount())
+            $this->priceCalculationHelper->getTaxRateFromPrice($totals->getGrandTotal(), $taxTotalAmount)
         );
 
-        $orderTransfer->getTotals()->getTaxTotal()->setTaxRate($taxRate);
+        $taxTotal->setTaxRate($taxRate);
     }
 }
