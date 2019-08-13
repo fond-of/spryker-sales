@@ -27,11 +27,6 @@ class SalesOrderSaver extends SprykerSalesOrderSaver
     protected $countryFacade;
 
     /**
-     * @var array
-     */
-    protected $orderCreatePostPlugins;
-
-    /**
      * @param \FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface $countryFacade
      * @param \Spryker\Zed\Sales\Dependency\Facade\SalesToOmsInterface $omsFacade
      * @param \Spryker\Zed\Sales\Business\Model\Order\OrderReferenceGeneratorInterface $orderReferenceGenerator
@@ -52,7 +47,7 @@ class SalesOrderSaver extends SprykerSalesOrderSaver
         $orderExpanderPreSavePlugins,
         SalesOrderSaverPluginExecutorInterface $salesOrderSaverPluginExecutor,
         SalesOrderItemMapperInterface $salesOrderItemMapper,
-        array $orderCreatePostPlugins
+        array $orderPostSavePlugins
     ) {
         $this->countryFacade = $countryFacade;
         $this->omsFacade = $omsFacade;
@@ -63,7 +58,7 @@ class SalesOrderSaver extends SprykerSalesOrderSaver
         $this->orderExpanderPreSavePlugins = $orderExpanderPreSavePlugins;
         $this->salesOrderSaverPluginExecutor = $salesOrderSaverPluginExecutor;
         $this->salesOrderItemMapper = $salesOrderItemMapper;
-        $this->orderCreatePostPlugins = $orderCreatePostPlugins;
+        $this->orderPostSavePlugins = $orderPostSavePlugins;
     }
 
     /**
@@ -81,9 +76,7 @@ class SalesOrderSaver extends SprykerSalesOrderSaver
         $this->addPaymentToQuoteTransfer($quoteTransfer, $orderTransfer);
 
         $this->saveOrderSales($quoteTransfer, $saveOrderTransfer);
-
-        $this->executePostCreatePlugins($orderTransfer, $saveOrderTransfer);
-
+        
         $orderTransfer->setIdSalesOrder($saveOrderTransfer->getIdSalesOrder());
 
         $orderResponseTransfer

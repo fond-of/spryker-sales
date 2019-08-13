@@ -87,7 +87,7 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
             $this->getOrderExpanderPreSavePlugins(),
             $this->createSalesOrderSaverPluginExecutor(),
             $this->createOrderItemMapper(),
-            $this->getOrderPostCreatePlugins()
+            $this->getOrderPostSavePlugins()
         );
     }
 
@@ -97,13 +97,5 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
     public function getCountryFacade()
     {
         return $this->getProvidedDependency(SalesDependencyProvider::FACADE_COUNTRY);
-    }
-
-    /**
-     * @return \FondOfSpryker\Zed\Sales\Dependency\Plugin\OrderCreatePluginInterface[]
-     */
-    public function getOrderPostCreatePlugins()
-    {
-        return $this->getProvidedDependency(SalesDependencyProvider::PLUGINS_ORDER_POST_CREATE);
     }
 }
