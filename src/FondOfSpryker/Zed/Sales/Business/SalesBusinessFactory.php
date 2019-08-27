@@ -7,10 +7,10 @@ use FondOfSpryker\Zed\Sales\Business\Model\Order\OrderReader;
 use FondOfSpryker\Zed\Sales\Business\Model\Order\SalesOrderSaver;
 use FondOfSpryker\Zed\Sales\SalesDependencyProvider;
 use Spryker\Zed\Sales\Business\Model\Order\OrderHydratorInterface;
-use Spryker\Zed\Sales\Business\Model\Order\OrderReferenceGenerator;
+use Spryker\Zed\Sales\Business\Model\Order\OrderReaderInterface;
 use Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaverInterface;
 use Spryker\Zed\Sales\Business\SalesBusinessFactory as SprykerSalesBusinessFactory;
-use Spryker\Zed\Tax\Business\Model\PriceCalculationHelper;
+use Spryker\Zed\Sales\Dependency\Facade\SalesToMoneyInterface;
 
 /**
  * @method \FondOfSpryker\Zed\Sales\Persistence\SalesQueryContainerInterface getQueryContainer()
@@ -27,49 +27,19 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
             $this->getQueryContainer(),
             $this->getOmsFacade(),
             $this->getHydrateOrderPlugins(),
-            $this->createMoneyPlugin(),
-            $this->createPriceCalculationHelper()
+            $this->getMoneyFacade()
         );
     }
 
     /**
      * @return \FondOfSpryker\Zed\Sales\Business\Model\Order\OrderReaderInterface
      */
-    public function createOrderReader()
+    public function createOrderReader(): OrderReaderInterface
     {
         return new OrderReader(
             $this->getQueryContainer(),
             $this->createOrderHydrator()
         );
-    }
-
-    /**
-     * @return \Spryker\Zed\Sales\Business\Model\Order\OrderReferenceGeneratorInterface
-     */
-    public function createReferenceGenerator()
-    {
-        $sequenceNumberSettings = $this->getConfig()->getOrderReferenceDefaults();
-
-        return new OrderReferenceGenerator(
-            $this->getSequenceNumberFacade(),
-            $sequenceNumberSettings
-        );
-    }
-
-    /**
-     * @return \Spryker\Shared\Money\Dependency\Plugin\MoneyPluginInterface
-     */
-    protected function createMoneyPlugin()
-    {
-        return $this->getProvidedDependency(SalesDependencyProvider::PLUGIN_MONEY);
-    }
-
-    /**
-     * @return \Spryker\Zed\Tax\Business\Model\PriceCalculationHelperInterface
-     */
-    public function createPriceCalculationHelper()
-    {
-        return new PriceCalculationHelper();
     }
 
     /**
@@ -92,10 +62,12 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
     }
 
     /**
-     * @return \FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface
+     * @throws
+     *
+     * @return \Spryker\Zed\Sales\Dependency\Facade\SalesToMoneyInterface
      */
-    public function getCountryFacade()
+    protected function getMoneyFacade(): SalesToMoneyInterface
     {
-        return $this->getProvidedDependency(SalesDependencyProvider::FACADE_COUNTRY);
+        return $this->getProvidedDependency(SalesDependencyProvider::FACADE_MONEY);
     }
 }

@@ -2,21 +2,21 @@
 
 namespace FondOfSpryker\Zed\Sales\Business\Model\Order;
 
+use FondOfSpryker\Zed\Sales\Business\Model\Exception\CalculationException;
 use Generated\Shared\Transfer\LocaleTransfer;
 use Generated\Shared\Transfer\OrderTransfer;
 use Orm\Zed\Sales\Persistence\SpySalesOrder;
-use Spryker\Shared\Money\Dependency\Plugin\MoneyPluginInterface;
-use Spryker\Zed\Sales\Business\Model\Order\OrderHydrator as BaseOrderHydrator;
+use Spryker\Zed\Sales\Business\Model\Order\OrderHydrator as SprykerOrderHydrator;
+use Spryker\Zed\Sales\Dependency\Facade\SalesToMoneyInterface;
 use Spryker\Zed\Sales\Dependency\Facade\SalesToOmsInterface;
 use Spryker\Zed\Sales\Persistence\SalesQueryContainerInterface;
-use Spryker\Zed\Tax\Business\Model\PriceCalculationHelperInterface;
 
-class OrderHydrator extends BaseOrderHydrator
+class OrderHydrator extends SprykerOrderHydrator
 {
     /**
-     * @var \Spryker\Shared\Money\Dependency\Plugin\MoneyPluginInterface
+     * @var \FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToMoneyInterface
      */
-    protected $moneyPlugin;
+    protected $moneyFacade;
 
     /**
      * @var \Spryker\Zed\Tax\Business\Model\PriceCalculationHelperInterface
@@ -24,30 +24,26 @@ class OrderHydrator extends BaseOrderHydrator
     protected $priceCalculationHelper;
 
     /**
-     * OrderHydrator constructor.
-     *
      * @param \Spryker\Zed\Sales\Persistence\SalesQueryContainerInterface $queryContainer
      * @param \Spryker\Zed\Sales\Dependency\Facade\SalesToOmsInterface $omsFacade
      * @param \Spryker\Zed\Sales\Dependency\Plugin\HydrateOrderPluginInterface[] $hydrateOrderPlugins
-     * @param \Spryker\Shared\Money\Dependency\Plugin\MoneyPluginInterface $moneyPlugin
-     * @param \Spryker\Zed\Tax\Business\Model\PriceCalculationHelperInterface $priceCalculationHelper
+     * @param \Spryker\Zed\Sales\Dependency\Facade\SalesToMoneyInterface $moneyFacade
      */
     public function __construct(
         SalesQueryContainerInterface $queryContainer,
         SalesToOmsInterface $omsFacade,
         array $hydrateOrderPlugins,
-        MoneyPluginInterface $moneyPlugin,
-        PriceCalculationHelperInterface $priceCalculationHelper
+        SalesToMoneyInterface $moneyFacade
     ) {
-        $this->queryContainer = $queryContainer;
-        $this->omsFacade = $omsFacade;
-        $this->hydrateOrderPlugins = $hydrateOrderPlugins;
-        $this->moneyPlugin = $moneyPlugin;
-        $this->priceCalculationHelper = $priceCalculationHelper;
+        parent::__construct($queryContainer, $omsFacade, $hydrateOrderPlugins);
+
+        $this->moneyFacade = $moneyFacade;
     }
 
     /**
      * @param \Orm\Zed\Sales\Persistence\SpySalesOrder $orderEntity
+     *
+     * @throws
      *
      * @return \Generated\Shared\Transfer\OrderTransfer
      */
@@ -67,9 +63,11 @@ class OrderHydrator extends BaseOrderHydrator
      * @param \Orm\Zed\Sales\Persistence\SpySalesOrder $orderEntity
      * @param \Generated\Shared\Transfer\OrderTransfer $orderTransfer
      *
+     * @throws
+     *
      * @return void
      */
-    protected function hydrateOrderTotals(SpySalesOrder $orderEntity, OrderTransfer $orderTransfer)
+    protected function hydrateOrderTotals(SpySalesOrder $orderEntity, OrderTransfer $orderTransfer): void
     {
         parent::hydrateOrderTotals($orderEntity, $orderTransfer);
 
@@ -79,13 +77,38 @@ class OrderHydrator extends BaseOrderHydrator
 
         if ($taxTotalAmount <= 0) {
             $taxTotal->setTaxRate(0);
+
             return;
         }
 
-        $taxRate = $this->moneyPlugin->convertDecimalToInteger(
-            $this->priceCalculationHelper->getTaxRateFromPrice($totals->getGrandTotal(), $taxTotalAmount)
+        $taxRate = $this->moneyFacade->convertDecimalToInteger(
+            $this->getTaxRateFromPrice($totals->getGrandTotal(), $taxTotalAmount)
         );
 
         $taxTotal->setTaxRate($taxRate);
+    }
+
+    /**
+     * @param int $price
+     * @param float $taxAmount
+     *
+     * @throws \FondOfSpryker\Zed\Sales\Business\Model\Exception\CalculationException
+     *
+     * @return float
+     */
+    protected function getTaxRateFromPrice($price, $taxAmount): float
+    {
+        $price = (int)$price;
+
+        if ($price < 0 || $taxAmount <= 0) {
+            throw new CalculationException('Invalid price or tax amount value given.');
+        }
+
+        $netPrice = $price - $taxAmount;
+        if ($netPrice <= 0) {
+            throw new CalculationException('Division by zero.');
+        }
+
+        return $taxAmount / $netPrice;
     }
 }

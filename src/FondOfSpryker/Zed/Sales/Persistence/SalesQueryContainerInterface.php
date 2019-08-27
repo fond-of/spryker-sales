@@ -8,7 +8,7 @@ use Spryker\Zed\Sales\Persistence\SalesQueryContainerInterface as SprykerSalesQu
 interface SalesQueryContainerInterface extends SprykerSalesQueryContainerInterface
 {
     /**
-     * @param int $idSalesOrder
+     * @param string $orderReference
      *
      * @return \Orm\Zed\Sales\Persistence\SpySalesOrderQuery
      */

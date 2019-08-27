@@ -3,7 +3,6 @@
 namespace FondOfSpryker\Client\Sales;
 
 use Generated\Shared\Transfer\OrderListTransfer;
-use Spryker\Client\Kernel\AbstractClient;
 use Spryker\Client\Sales\SalesClient as SprykerSalesClient;
 
 /**
@@ -18,8 +17,9 @@ class SalesClient extends SprykerSalesClient implements SalesClientInterface
      */
     public function findOrdersByCustomerReference(OrderListTransfer $orderListTransfer): OrderListTransfer
     {
-        return $this->getFactory()
-            ->createZedSalesStub()
-            ->findOrdersByCustomerReference($orderListTransfer);
+        /** @var \FondOfSpryker\Client\Sales\Zed\SalesStubInterface $zedSalesStub */
+        $zedSalesStub = $this->getFactory()->createZedSalesStub();
+
+        return $zedSalesStub->findOrdersByCustomerReference($orderListTransfer);
     }
 }

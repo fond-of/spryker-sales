@@ -2,7 +2,6 @@
 
 namespace FondOfSpryker\Zed\Sales\Persistence;
 
-use FondOfSpryker\Zed\Sales\Persistence\SalesQueryContainerInterface;
 use Orm\Zed\Sales\Persistence\SpySalesOrderQuery;
 use Spryker\Zed\Sales\Persistence\SalesQueryContainer as SprykerSalesQueryContainer;
 
@@ -12,14 +11,16 @@ use Spryker\Zed\Sales\Persistence\SalesQueryContainer as SprykerSalesQueryContai
 class SalesQueryContainer extends SprykerSalesQueryContainer implements SalesQueryContainerInterface
 {
     /**
-     *
      * @param string $orderReference
+     *
+     * @throws
      *
      * @return \Orm\Zed\Sales\Persistence\SpySalesOrderQuery
      */
     public function querySalesOrderByOrderReference(string $orderReference): SpySalesOrderQuery
     {
         $query = $this->getFactory()->createSalesOrderQuery();
+
         $query->filterByOrderReference($orderReference);
 
         return $query;
@@ -28,16 +29,16 @@ class SalesQueryContainer extends SprykerSalesQueryContainer implements SalesQue
     /**
      * @param string $customerReference
      *
-     * @return \Orm\Zed\Sales\Persistence\SpySalesOrderQuery
+     * @throws
      *
-     * @throws \Spryker\Zed\Propel\Business\Exception\AmbiguousComparisonException
+     * @return
      */
     public function querySalesOrderByCustomerReference(string $customerReference): SpySalesOrderQuery
     {
         $query = $this->getFactory()->createSalesOrderQuery();
+
         $query->filterByCustomerReference($customerReference);
 
         return $query;
     }
-
 }

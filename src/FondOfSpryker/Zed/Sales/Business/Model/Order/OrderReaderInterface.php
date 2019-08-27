@@ -16,9 +16,13 @@ interface OrderReaderInterface extends SprykerOrderReaderInterface
     public function findSalesOrderByOrderReference(string $orderReference): ?OrderTransfer;
 
     /**
+     * @param \Generated\Shared\Transfer\OrderListTransfer $orderListTransfer
      * @param string $customerReference
      *
      * @return \Generated\Shared\Transfer\OrderListTransfer
      */
-    public function findOrdersByCustomerReference(OrderListTransfer $orderListTransfer, string $customerReference): OrderListTransfer;
+    public function findOrdersByCustomerReference(
+        OrderListTransfer $orderListTransfer,
+        string $customerReference
+    ): OrderListTransfer;
 }
