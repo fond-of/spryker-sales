@@ -14,7 +14,8 @@
   ],
   "require": {
     "php": ">=7.1",
-    "spryker/sales": "^8.0.0 || ^10.0.0"
+    "spryker/sales": "^8.0.0 || ^10.0.0",
+    "fond-of-spryker/country": "dev-master"
   },
   "require-dev": {
     "spryker/code-sniffer": "^0.12",
@@ -22,7 +23,8 @@
     "mikey179/vfsStream": "^1.6",
     "phpro/grumphp": "^0.14",
     "sebastian/phpcpd": "^4.0",
-    "php-coveralls/php-coveralls": "^2.1"
+    "php-coveralls/php-coveralls": "^2.1",
+    "fond-of-codeception/spryker": "dev-master"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
@@ -33,7 +35,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "FondOfSpryker\\": "tests/FondOfSpryker/"
+      "FondOfSpryker\\": "tests/FondOfSpryker/",
+      "Generated\\": "src/Generated/"
     }
   }
 }
