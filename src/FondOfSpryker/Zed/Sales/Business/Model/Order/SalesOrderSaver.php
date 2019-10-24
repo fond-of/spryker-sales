@@ -3,13 +3,16 @@
 namespace FondOfSpryker\Zed\Sales\Business\Model\Order;
 
 use Generated\Shared\Transfer\AddressTransfer;
-use Generated\Shared\Transfer\OrderResponseTransfer;
-use Generated\Shared\Transfer\OrderTransfer;
-use Generated\Shared\Transfer\PaymentTransfer;
-use Generated\Shared\Transfer\QuoteTransfer;
-use Generated\Shared\Transfer\SaveOrderTransfer;
 use Orm\Zed\Sales\Persistence\SpySalesOrderAddress;
+use Spryker\Shared\Kernel\Store;
+use Spryker\Zed\Locale\Persistence\LocaleQueryContainerInterface;
+use Spryker\Zed\Sales\Business\Model\Order\OrderReferenceGeneratorInterface;
 use Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaver as SprykerSalesOrderSaver;
+use Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaverPluginExecutorInterface;
+use Spryker\Zed\Sales\Business\Model\OrderItem\SalesOrderItemMapperInterface;
+use Spryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface;
+use Spryker\Zed\Sales\Dependency\Facade\SalesToOmsInterface;
+use Spryker\Zed\Sales\SalesConfig;
 
 class SalesOrderSaver extends SprykerSalesOrderSaver
 {
@@ -19,45 +22,50 @@ class SalesOrderSaver extends SprykerSalesOrderSaver
     protected $countryFacade;
 
     /**
-     * @param \Generated\Shared\Transfer\OrderTransfer $orderTransfer
-     *
-     * @return \Generated\Shared\Transfer\OrderResponseTransfer
+     * @var array
      */
-    public function createSalesOrder(OrderTransfer $orderTransfer): OrderResponseTransfer
-    {
-        $quoteTransfer = new QuoteTransfer();
-        $saveOrderTransfer = new SaveOrderTransfer();
-        $orderResponseTransfer = $this->createOrderResponseTransfer();
-
-        $quoteTransfer->fromArray($orderTransfer->toArray(), true);
-        $this->addPaymentToQuoteTransfer($quoteTransfer, $orderTransfer);
-
-        $this->saveOrderSales($quoteTransfer, $saveOrderTransfer);
-
-        $orderTransfer->setIdSalesOrder($saveOrderTransfer->getIdSalesOrder());
-
-        $orderResponseTransfer
-            ->setIsSuccess(true)
-            ->setOrderTransfer($orderTransfer);
-
-        return $orderResponseTransfer;
-    }
+    protected $salesOrderAddressHydrationPlugins;
 
     /**
-     * @param \Generated\Shared\Transfer\QuoteTransfer $quoteTransfer
-     * @param \Generated\Shared\Transfer\OrderTransfer $orderTransfer
-     *
-     * @return void
+     * @param \Spryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface $countryFacade
+     * @param \Spryker\Zed\Sales\Dependency\Facade\SalesToOmsInterface $omsFacade
+     * @param \Spryker\Zed\Sales\Business\Model\Order\OrderReferenceGeneratorInterface $orderReferenceGenerator
+     * @param \Spryker\Zed\Sales\SalesConfig $salesConfiguration
+     * @param \Spryker\Zed\Locale\Persistence\LocaleQueryContainerInterface $localeQueryContainer
+     * @param \Spryker\Shared\Kernel\Store $store
+     * @param $orderExpanderPreSavePlugins
+     * @param \Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaverPluginExecutorInterface $salesOrderSaverPluginExecutor
+     * @param \Spryker\Zed\Sales\Business\Model\OrderItem\SalesOrderItemMapperInterface $salesOrderItemMapper
+     * @param array $orderPostSavePlugins
+     * @param \FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[] $salesOrderAddressHydrationPlugins
      */
-    protected function addPaymentToQuoteTransfer(QuoteTransfer $quoteTransfer, OrderTransfer $orderTransfer): void
-    {
-        $paymentTransfer = new PaymentTransfer();
-        $paymentTransfer->setPaymentSelection($orderTransfer->getPayment()->getPaymentSelection());
-        $paymentTransfer->setPaymentProvider($orderTransfer->getPayment()->getPaymentMethod());
-        $paymentTransfer->setPaymentMethod($orderTransfer->getPayment()->getPaymentMethod());
-        $paymentTransfer->setAmount($orderTransfer->getPayment()->getAmount());
+    public function __construct(
+        SalesToCountryInterface $countryFacade,
+        SalesToOmsInterface $omsFacade,
+        OrderReferenceGeneratorInterface $orderReferenceGenerator,
+        SalesConfig $salesConfiguration,
+        LocaleQueryContainerInterface $localeQueryContainer,
+        Store $store,
+        $orderExpanderPreSavePlugins,
+        SalesOrderSaverPluginExecutorInterface $salesOrderSaverPluginExecutor,
+        SalesOrderItemMapperInterface $salesOrderItemMapper,
+        array $orderPostSavePlugins,
+        array $salesOrderAddressHydrationPlugins
+    ) {
+        parent::__construct(
+            $countryFacade,
+            $omsFacade,
+            $orderReferenceGenerator,
+            $salesConfiguration,
+            $localeQueryContainer,
+            $store,
+            $orderExpanderPreSavePlugins,
+            $salesOrderSaverPluginExecutor,
+            $salesOrderItemMapper,
+            $orderPostSavePlugins
+        );
 
-        $quoteTransfer->setPayment($paymentTransfer);
+        $this->salesOrderAddressHydrationPlugins = $salesOrderAddressHydrationPlugins;
     }
 
     /**
@@ -70,29 +78,19 @@ class SalesOrderSaver extends SprykerSalesOrderSaver
         AddressTransfer $addressTransfer,
         SpySalesOrderAddress $salesOrderAddressEntity
     ): void {
-        $salesOrderAddressEntity->fromArray($addressTransfer->toArray());
-
-        $salesOrderAddressEntity->setFkCountry(
-            $this->countryFacade->getIdCountryByIso2Code($addressTransfer->getIso2Code())
-        );
+        parent::hydrateSalesOrderAddress($addressTransfer, $salesOrderAddressEntity);
 
         if ($addressTransfer->getRegion()) {
             $salesOrderAddressEntity->setFkRegion(
                 $this->countryFacade->getIdRegionByIso2Code($addressTransfer->getRegion())
             );
         }
-    }
 
-    /**
-     * @param bool $isSuccess
-     *
-     * @return \Generated\Shared\Transfer\OrderResponseTransfer
-     */
-    protected function createOrderResponseTransfer($isSuccess = true): OrderResponseTransfer
-    {
-        $orderResponseTransfer = new OrderResponseTransfer();
-        $orderResponseTransfer->setIsSuccess($isSuccess);
-
-        return $orderResponseTransfer;
+        foreach ($this->salesOrderAddressHydrationPlugins as $salesOrderAddressHydrationPlugin) {
+            $salesOrderAddressEntity = $salesOrderAddressHydrationPlugin->hydrate(
+                $addressTransfer,
+                $salesOrderAddressEntity
+            );
+        }
     }
 }

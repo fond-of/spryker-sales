@@ -3,14 +3,13 @@
 namespace FondOfSpryker\Zed\Sales\Business\Model;
 
 use Codeception\Test\Unit;
-use FondOfSpryker\Zed\Sales\Business\Model\Order\OrderReaderInterface;
 use FondOfSpryker\Zed\Sales\Business\Model\Order\SalesOrderSaver;
 use FondOfSpryker\Zed\Sales\Business\SalesBusinessFactory;
 use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface;
 use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToMoneyInterface;
-use FondOfSpryker\Zed\Sales\Persistence\SalesQueryContainer;
+use FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface;
 use FondOfSpryker\Zed\Sales\SalesConfig;
-use FondOfSpryker\Zed\Sales\SalesDependencyProvider as SalesSalesDependencyProvider;
+use FondOfSpryker\Zed\Sales\SalesDependencyProvider;
 use Generated\Shared\Transfer\SequenceNumberSettingsTransfer;
 use Spryker\Shared\Kernel\Store;
 use Spryker\Zed\Kernel\Container;
@@ -19,7 +18,7 @@ use Spryker\Zed\Sales\Business\Model\Order\OrderHydratorInterface;
 use Spryker\Zed\Sales\Dependency\Facade\SalesToOmsInterface;
 use Spryker\Zed\Sales\Dependency\Facade\SalesToSequenceNumberInterface;
 use Spryker\Zed\Sales\Dependency\Plugin\OrderExpanderPreSavePluginInterface;
-use Spryker\Zed\Sales\SalesDependencyProvider;
+use Spryker\Zed\Sales\Persistence\SalesQueryContainer;
 use Spryker\Zed\SalesExtension\Dependency\Plugin\OrderExpanderPluginInterface;
 use Spryker\Zed\SalesExtension\Dependency\Plugin\OrderItemExpanderPreSavePluginInterface;
 use Spryker\Zed\SalesExtension\Dependency\Plugin\OrderPostSavePluginInterface;
@@ -32,7 +31,7 @@ class SalesBusinessFactoryTest extends Unit
     protected $salesBusinessFactory;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\Sales\Persistence\SalesQueryContainer
+     * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\Sales\Persistence\SalesQueryContainer
      */
     protected $salesQueryContainerInterfaceMock;
 
@@ -122,6 +121,16 @@ class SalesBusinessFactoryTest extends Unit
     protected $orderItemExpanderPreSavePlugins;
 
     /**
+     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface
+     */
+    protected $salesOrderAddressHydrationPluginMock;
+
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject[]|\FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[]
+     */
+    protected $salesOrderAddressHydrationPlugins;
+
+    /**
      * @return void
      */
     protected function _before(): void
@@ -200,6 +209,14 @@ class SalesBusinessFactoryTest extends Unit
             $this->orderPostSavePluginInterfaceMock,
         ];
 
+        $this->salesOrderAddressHydrationPluginMock = $this->getMockBuilder(SalesOrderAddressHydrationPluginInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->salesOrderAddressHydrationPlugins = [
+            $this->salesOrderAddressHydrationPluginMock,
+        ];
+
         $this->salesBusinessFactory = new SalesBusinessFactory();
         $this->salesBusinessFactory->setQueryContainer($this->salesQueryContainerInterfaceMock);
         $this->salesBusinessFactory->setConfig($this->salesConfigMock);
@@ -224,7 +241,7 @@ class SalesBusinessFactoryTest extends Unit
             ->withConsecutive(
                 [SalesDependencyProvider::FACADE_OMS],
                 [SalesDependencyProvider::HYDRATE_ORDER_PLUGINS],
-                [SalesSalesDependencyProvider::FACADE_MONEY]
+                [SalesDependencyProvider::FACADE_MONEY]
             )
             ->willReturnOnConsecutiveCalls(
                 $this->salesToOmsInterfaceMock,
@@ -233,35 +250,6 @@ class SalesBusinessFactoryTest extends Unit
             );
 
         $this->assertInstanceOf(OrderHydratorInterface::class, $this->salesBusinessFactory->createOrderHydrator());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreateOrderReader(): void
-    {
-        $this->containerMock->expects($this->atLeastOnce())
-            ->method('has')
-            ->willReturnOnConsecutiveCalls(
-                true,
-                true,
-                true
-            );
-
-        $this->containerMock->expects($this->atLeastOnce())
-            ->method('get')
-            ->withConsecutive(
-                [SalesDependencyProvider::FACADE_OMS],
-                [SalesDependencyProvider::HYDRATE_ORDER_PLUGINS],
-                [SalesSalesDependencyProvider::FACADE_MONEY]
-            )
-            ->willReturnOnConsecutiveCalls(
-                $this->salesToOmsInterfaceMock,
-                $this->orderExpanderPlugins,
-                $this->salesToMoneyInterfaceMock
-            );
-
-        $this->assertInstanceOf(OrderReaderInterface::class, $this->salesBusinessFactory->createOrderReader());
     }
 
     /**
@@ -283,6 +271,7 @@ class SalesBusinessFactoryTest extends Unit
                 true,
                 true,
                 true,
+                true,
                 true
             );
 
@@ -296,7 +285,8 @@ class SalesBusinessFactoryTest extends Unit
                 [SalesDependencyProvider::STORE],
                 [SalesDependencyProvider::ORDER_EXPANDER_PRE_SAVE_PLUGINS],
                 [SalesDependencyProvider::ORDER_ITEM_EXPANDER_PRE_SAVE_PLUGINS],
-                [SalesDependencyProvider::PLUGINS_ORDER_POST_SAVE]
+                [SalesDependencyProvider::PLUGINS_ORDER_POST_SAVE],
+                [SalesDependencyProvider::PLUGINS_SALES_ORDER_ADDRESS_HYDRATION]
             )
             ->willReturnOnConsecutiveCalls(
                 $this->salesToCountryInterfaceMock,
@@ -306,7 +296,8 @@ class SalesBusinessFactoryTest extends Unit
                 $this->storeMock,
                 $this->orderExpanderPreSavePlugins,
                 $this->orderItemExpanderPreSavePlugins,
-                $this->orderPostSavePlugins
+                $this->orderPostSavePlugins,
+                $this->salesOrderAddressHydrationPlugins
             );
 
         $this->assertInstanceOf(SalesOrderSaver::class, $this->salesBusinessFactory->createSalesOrderSaver());

@@ -9,6 +9,8 @@ use Spryker\Zed\Sales\SalesDependencyProvider as SprykerSalesDependencyProvider;
 
 class SalesDependencyProvider extends SprykerSalesDependencyProvider
 {
+    public const PLUGINS_SALES_ORDER_ADDRESS_HYDRATION = 'PLUGINS_SALES_ORDER_ADDRESS_HYDRATION';
+
     /**
      * @param \Spryker\Zed\Kernel\Container $container
      *
@@ -20,6 +22,7 @@ class SalesDependencyProvider extends SprykerSalesDependencyProvider
 
         $container = $this->addMoneyPlugin($container);
         $container = $this->addCountryFacade($container);
+        $container = $this->addSalesOrderAddressHydrationPlugins($container);
 
         return $container;
     }
@@ -50,5 +53,27 @@ class SalesDependencyProvider extends SprykerSalesDependencyProvider
         };
 
         return $container;
+    }
+
+    /**
+     * @param \Spryker\Zed\Kernel\Container $container
+     *
+     * @return \Spryker\Zed\Kernel\Container
+     */
+    protected function addSalesOrderAddressHydrationPlugins(Container $container): Container
+    {
+        $container[static::PLUGINS_SALES_ORDER_ADDRESS_HYDRATION] = function () {
+            return $this->getSalesOrderAddressHydrationPlugins();
+        };
+
+        return $container;
+    }
+
+    /**
+     * @return \FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[]
+     */
+    protected function getSalesOrderAddressHydrationPlugins(): array
+    {
+        return [];
     }
 }

@@ -3,17 +3,15 @@
 namespace FondOfSpryker\Zed\Sales\Business;
 
 use FondOfSpryker\Zed\Sales\Business\Model\Order\OrderHydrator;
-use FondOfSpryker\Zed\Sales\Business\Model\Order\OrderReader;
 use FondOfSpryker\Zed\Sales\Business\Model\Order\SalesOrderSaver;
 use FondOfSpryker\Zed\Sales\SalesDependencyProvider;
 use Spryker\Zed\Sales\Business\Model\Order\OrderHydratorInterface;
-use Spryker\Zed\Sales\Business\Model\Order\OrderReaderInterface;
 use Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaverInterface;
 use Spryker\Zed\Sales\Business\SalesBusinessFactory as SprykerSalesBusinessFactory;
 use Spryker\Zed\Sales\Dependency\Facade\SalesToMoneyInterface;
 
 /**
- * @method \FondOfSpryker\Zed\Sales\Persistence\SalesQueryContainerInterface getQueryContainer()
+ * @method \Spryker\Zed\Sales\Persistence\SalesQueryContainerInterface getQueryContainer()
  * @method \FondOfSpryker\Zed\Sales\SalesConfig getConfig()
  */
 class SalesBusinessFactory extends SprykerSalesBusinessFactory
@@ -32,17 +30,6 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
     }
 
     /**
-     * @return \FondOfSpryker\Zed\Sales\Business\Model\Order\OrderReaderInterface
-     */
-    public function createOrderReader(): OrderReaderInterface
-    {
-        return new OrderReader(
-            $this->getQueryContainer(),
-            $this->createOrderHydrator()
-        );
-    }
-
-    /**
      * @return \Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaverInterface
      */
     public function createSalesOrderSaver(): SalesOrderSaverInterface
@@ -57,7 +44,8 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
             $this->getOrderExpanderPreSavePlugins(),
             $this->createSalesOrderSaverPluginExecutor(),
             $this->createOrderItemMapper(),
-            $this->getOrderPostSavePlugins()
+            $this->getOrderPostSavePlugins(),
+            $this->getSalesOrderAddressHydrationPlugins()
         );
     }
 
@@ -69,5 +57,15 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
     protected function getMoneyFacade(): SalesToMoneyInterface
     {
         return $this->getProvidedDependency(SalesDependencyProvider::FACADE_MONEY);
+    }
+
+    /**
+     * @throws
+     *
+     * @return \FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[]
+     */
+    protected function getSalesOrderAddressHydrationPlugins(): array
+    {
+        return $this->getProvidedDependency(SalesDependencyProvider::PLUGINS_SALES_ORDER_ADDRESS_HYDRATION);
     }
 }

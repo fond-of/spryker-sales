@@ -36,6 +36,7 @@ class OrderHydrator extends SprykerOrderHydrator
         SalesToMoneyInterface $moneyFacade
     ) {
         parent::__construct($queryContainer, $omsFacade, $hydrateOrderPlugins);
+
         $this->moneyFacade = $moneyFacade;
     }
 
@@ -49,10 +50,11 @@ class OrderHydrator extends SprykerOrderHydrator
     public function hydrateBaseOrderTransfer(SpySalesOrder $orderEntity): OrderTransfer
     {
         $orderTransfer = parent::hydrateBaseOrderTransfer($orderEntity);
-        $localeTransfer = new LocaleTransfer();
-        $localeTransfer->fromArray($orderEntity->getLocale()->toArray());
-        $orderTransfer->setLocale($localeTransfer);
-        return $orderTransfer;
+
+        $localeTransfer = (new LocaleTransfer())
+            ->fromArray($orderEntity->getLocale()->toArray());
+
+        return $orderTransfer->setLocale($localeTransfer);
     }
 
     /**
@@ -66,16 +68,21 @@ class OrderHydrator extends SprykerOrderHydrator
     protected function hydrateOrderTotals(SpySalesOrder $orderEntity, OrderTransfer $orderTransfer): void
     {
         parent::hydrateOrderTotals($orderEntity, $orderTransfer);
+
         $totals = $orderTransfer->getTotals();
         $taxTotal = $totals->getTaxTotal();
         $taxTotalAmount = $taxTotal->getAmount();
+
         if ($taxTotalAmount <= 0) {
             $taxTotal->setTaxRate(0);
+
             return;
         }
+
         $taxRate = $this->moneyFacade->convertDecimalToInteger(
             $this->getTaxRateFromPrice($totals->getGrandTotal(), $taxTotalAmount)
         );
+
         $taxTotal->setTaxRate($taxRate);
     }
 
@@ -90,13 +97,17 @@ class OrderHydrator extends SprykerOrderHydrator
     protected function getTaxRateFromPrice($price, $taxAmount): float
     {
         $price = (int)$price;
+
         if ($price < 0 || $taxAmount <= 0) {
             throw new CalculationException('Invalid price or tax amount value given.');
         }
+
         $netPrice = $price - $taxAmount;
+
         if ($netPrice <= 0) {
             throw new CalculationException('Division by zero.');
         }
+
         return $taxAmount / $netPrice;
     }
 }

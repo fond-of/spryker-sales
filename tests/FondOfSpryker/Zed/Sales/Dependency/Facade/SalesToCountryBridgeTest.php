@@ -29,7 +29,7 @@ class SalesToCountryBridgeTest extends Unit
     {
         parent::_before();
 
-        $this->isoCode = "iso-code";
+        $this->isoCode = 'iso-code';
 
         $this->countryFacadeInterfaceMock = $this->getMockBuilder(CountryFacadeInterface::class)
             ->disableOriginalConstructor()
