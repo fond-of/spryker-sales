@@ -12,14 +12,6 @@ class SalesToCountryBridge extends SprykerSalesToCountryBridge implements SalesT
     protected $countryFacade;
 
     /**
-     * @param \FondOfSpryker\Zed\Country\Business\CountryFacadeInterface $countryFacade
-     */
-    public function __construct($countryFacade)
-    {
-        $this->countryFacade = $countryFacade;
-    }
-
-    /**
      * @param string $iso2code
      *
      * @return int

@@ -14,7 +14,7 @@ class SalesConfig extends SprykerSalesConfig
      *
      * @return \Generated\Shared\Transfer\SequenceNumberSettingsTransfer
      */
-    public function getOrderReferenceDefaults()
+    public function getOrderReferenceDefaults(): SequenceNumberSettingsTransfer
     {
         $sequenceNumberSettingsTransfer = new SequenceNumberSettingsTransfer();
 

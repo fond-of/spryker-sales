@@ -4,14 +4,14 @@ namespace FondOfSpryker\Zed\Sales\Business;
 
 use FondOfSpryker\Zed\Sales\Business\Model\Order\OrderHydrator;
 use FondOfSpryker\Zed\Sales\Business\Model\Order\SalesOrderSaver;
-use Pyz\Zed\Sales\SalesDependencyProvider;
+use FondOfSpryker\Zed\Sales\SalesDependencyProvider;
 use Spryker\Zed\Sales\Business\Model\Order\OrderHydratorInterface;
-use Spryker\Zed\Sales\Business\Model\Order\OrderReferenceGenerator;
 use Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaverInterface;
 use Spryker\Zed\Sales\Business\SalesBusinessFactory as SprykerSalesBusinessFactory;
-use Spryker\Zed\Tax\Business\Model\PriceCalculationHelper;
+use Spryker\Zed\Sales\Dependency\Facade\SalesToMoneyInterface;
 
 /**
+ * @method \Spryker\Zed\Sales\Persistence\SalesQueryContainerInterface getQueryContainer()
  * @method \FondOfSpryker\Zed\Sales\SalesConfig getConfig()
  */
 class SalesBusinessFactory extends SprykerSalesBusinessFactory
@@ -25,38 +25,8 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
             $this->getQueryContainer(),
             $this->getOmsFacade(),
             $this->getHydrateOrderPlugins(),
-            $this->createMoneyPlugin(),
-            $this->createPriceCalculationHelper()
+            $this->getMoneyFacade()
         );
-    }
-
-    /**
-     * @return \Spryker\Zed\Sales\Business\Model\Order\OrderReferenceGeneratorInterface
-     */
-    public function createReferenceGenerator()
-    {
-        $sequenceNumberSettings = $this->getConfig()->getOrderReferenceDefaults();
-
-        return new OrderReferenceGenerator(
-            $this->getSequenceNumberFacade(),
-            $sequenceNumberSettings
-        );
-    }
-
-    /**
-     * @return \Spryker\Shared\Money\Dependency\Plugin\MoneyPluginInterface
-     */
-    protected function createMoneyPlugin()
-    {
-        return $this->getProvidedDependency(SalesDependencyProvider::PLUGIN_MONEY);
-    }
-
-    /**
-     * @return \Spryker\Zed\Tax\Business\Model\PriceCalculationHelperInterface
-     */
-    public function createPriceCalculationHelper()
-    {
-        return new PriceCalculationHelper();
     }
 
     /**
@@ -73,15 +43,29 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
             $this->getStore(),
             $this->getOrderExpanderPreSavePlugins(),
             $this->createSalesOrderSaverPluginExecutor(),
-            $this->createOrderItemMapper()
+            $this->createOrderItemMapper(),
+            $this->getOrderPostSavePlugins(),
+            $this->getSalesOrderAddressHydrationPlugins()
         );
     }
 
     /**
-     * @return \FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface
+     * @throws
+     *
+     * @return \Spryker\Zed\Sales\Dependency\Facade\SalesToMoneyInterface
      */
-    public function getCountryFacade()
+    protected function getMoneyFacade(): SalesToMoneyInterface
     {
-        return $this->getProvidedDependency(SalesDependencyProvider::FACADE_COUNTRY);
+        return $this->getProvidedDependency(SalesDependencyProvider::FACADE_MONEY);
+    }
+
+    /**
+     * @throws
+     *
+     * @return \FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[]
+     */
+    protected function getSalesOrderAddressHydrationPlugins(): array
+    {
+        return $this->getProvidedDependency(SalesDependencyProvider::PLUGINS_SALES_ORDER_ADDRESS_HYDRATION);
     }
 }

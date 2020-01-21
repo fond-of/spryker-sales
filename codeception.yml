@@ -1,3 +1,5 @@
+namespace: fond-of-spryker/sales
+
 suites:
   unit:
     path: .
@@ -17,3 +19,7 @@ coverage:
   enabled: true
   include:
     - src/*.php
+
+modules:
+  enabled:
+    - \FondOfCodeception\Module\Spryker
