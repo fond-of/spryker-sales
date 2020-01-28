@@ -15,7 +15,7 @@
   "require": {
     "php": ">=7.2",
     "spryker/sales": "^11.4.1",
-    "fond-of-spryker/country": "dev-master"
+    "fond-of-spryker/country": "dev-spryker_upgrade"
   },
   "require-dev": {
     "spryker/code-sniffer": "^0.14.7",
