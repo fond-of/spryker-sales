@@ -13,8 +13,8 @@
     }
   ],
   "require": {
-    "php": ">=7.1",
-    "spryker/sales": "^11.0.0",
+    "php": ">=7.2",
+    "spryker/sales": "^11.4.1",
     "fond-of-spryker/country": "dev-master"
   },
   "require-dev": {
