@@ -50,8 +50,6 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
     }
 
     /**
-     * @throws
-     *
      * @return \Spryker\Zed\Sales\Dependency\Facade\SalesToMoneyInterface
      */
     protected function getMoneyFacade(): SalesToMoneyInterface
@@ -60,8 +58,6 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
     }
 
     /**
-     * @throws
-     *
      * @return \FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[]
      */
     protected function getSalesOrderAddressHydrationPlugins(): array

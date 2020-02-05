@@ -43,8 +43,6 @@ class OrderHydrator extends SprykerOrderHydrator
     /**
      * @param \Orm\Zed\Sales\Persistence\SpySalesOrder $orderEntity
      *
-     * @throws
-     *
      * @return \Generated\Shared\Transfer\OrderTransfer
      */
     public function hydrateBaseOrderTransfer(SpySalesOrder $orderEntity): OrderTransfer
@@ -60,8 +58,6 @@ class OrderHydrator extends SprykerOrderHydrator
     /**
      * @param \Orm\Zed\Sales\Persistence\SpySalesOrder $orderEntity
      * @param \Generated\Shared\Transfer\OrderTransfer $orderTransfer
-     *
-     * @throws
      *
      * @return void
      */

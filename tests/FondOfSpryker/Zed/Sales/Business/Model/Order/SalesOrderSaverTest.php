@@ -145,8 +145,6 @@ class SalesOrderSaverTest extends Unit
     }
 
     /**
-     * @throws
-     *
      * @return void
      */
     public function testHydrateSalesOrderAddress(): void
