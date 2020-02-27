@@ -43,7 +43,7 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
             $this->getStore(),
             $this->getOrderExpanderPreSavePlugins(),
             $this->createSalesOrderSaverPluginExecutor(),
-            $this->createOrderItemMapper(),
+            $this->createSalesOrderItemMapper(),
             $this->getOrderPostSavePlugins(),
             $this->getSalesOrderAddressHydrationPlugins()
         );
