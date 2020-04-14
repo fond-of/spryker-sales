@@ -2,9 +2,9 @@
 
 namespace FondOfSpryker\Zed\Sales\Dependency\Facade;
 
-use Spryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface as SprykerSalesToCountryInterface;
+use Spryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface;
 
-interface SalesToCountryInterface extends SprykerSalesToCountryInterface
+interface SalesToCountryFacadeInterface extends SalesToCountryInterface
 {
     /**
      * @param string $iso2code

@@ -8,7 +8,7 @@ use Spryker\Zed\Money\Business\MoneyFacadeInterface;
 class SalesToMoneyBridgeTest extends Unit
 {
     /**
-     * @var \FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToMoneyBridge
+     * @var \FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToMoneyFacadeBridge
      */
     protected $salesToMoneyBridge;
 
@@ -28,7 +28,7 @@ class SalesToMoneyBridgeTest extends Unit
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->salesToMoneyBridge = new SalesToMoneyBridge($this->moneyFacadeInterfaceMock);
+        $this->salesToMoneyBridge = new SalesToMoneyFacadeBridge($this->moneyFacadeInterfaceMock);
     }
 
     /**

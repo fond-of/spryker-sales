@@ -4,7 +4,7 @@ namespace FondOfSpryker\Zed\Sales\Dependency\Facade;
 
 use Spryker\Zed\Sales\Dependency\Facade\SalesToCountryBridge as SprykerSalesToCountryBridge;
 
-class SalesToCountryBridge extends SprykerSalesToCountryBridge implements SalesToCountryInterface
+class SalesToCountryFacadeBridge extends SprykerSalesToCountryBridge implements SalesToCountryFacadeInterface
 {
     /**
      * @var \FondOfSpryker\Zed\Country\Business\CountryFacadeInterface

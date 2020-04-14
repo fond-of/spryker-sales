@@ -2,9 +2,9 @@
 
 namespace FondOfSpryker\Zed\Sales\Dependency\Facade;
 
-use Spryker\Zed\Sales\Dependency\Facade\SalesToMoneyInterface as SprykerSalesToMoneyInterface;
+use Spryker\Zed\Sales\Dependency\Facade\SalesToMoneyInterface;
 
-interface SalesToMoneyInterface extends SprykerSalesToMoneyInterface
+interface SalesToMoneyFacadeInterface extends SalesToMoneyInterface
 {
     /**
      * @param float $value

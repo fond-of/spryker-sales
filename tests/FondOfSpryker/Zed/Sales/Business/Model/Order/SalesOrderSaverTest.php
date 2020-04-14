@@ -3,7 +3,7 @@
 namespace FondOfSpryker\Zed\Sales\Business\Model\Order;
 
 use Codeception\Test\Unit;
-use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface;
+use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryFacadeInterface;
 use FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface;
 use FondOfSpryker\Zed\Sales\SalesConfig;
 use Generated\Shared\Transfer\AddressTransfer;
@@ -23,7 +23,7 @@ class SalesOrderSaverTest extends Unit
     protected $salesOrderSaver;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface
+     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryFacadeInterface
      */
     protected $countryFacadeMock;
 
@@ -84,7 +84,7 @@ class SalesOrderSaverTest extends Unit
     {
         parent::_before();
 
-        $this->countryFacadeMock = $this->getMockBuilder(SalesToCountryInterface::class)
+        $this->countryFacadeMock = $this->getMockBuilder(SalesToCountryFacadeInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 

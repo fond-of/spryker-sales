@@ -14,14 +14,9 @@ use Spryker\Zed\Sales\Persistence\SalesQueryContainerInterface;
 class OrderHydrator extends SprykerOrderHydrator
 {
     /**
-     * @var \FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToMoneyInterface
+     * @var \FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToMoneyFacadeInterface
      */
     protected $moneyFacade;
-
-    /**
-     * @var \Spryker\Zed\Tax\Business\Model\PriceCalculationHelperInterface
-     */
-    protected $priceCalculationHelper;
 
     /**
      * @param \Spryker\Zed\Sales\Persistence\SalesQueryContainerInterface $queryContainer
@@ -49,6 +44,10 @@ class OrderHydrator extends SprykerOrderHydrator
     {
         $orderTransfer = parent::hydrateBaseOrderTransfer($orderEntity);
 
+        if ($orderEntity->getLocale() === null) {
+            return $orderTransfer;
+        }
+
         $localeTransfer = (new LocaleTransfer())
             ->fromArray($orderEntity->getLocale()->toArray());
 
@@ -66,6 +65,7 @@ class OrderHydrator extends SprykerOrderHydrator
         parent::hydrateOrderTotals($orderEntity, $orderTransfer);
 
         $totals = $orderTransfer->getTotals();
+
         $taxTotal = $totals->getTaxTotal();
         $taxTotalAmount = $taxTotal->getAmount();
 

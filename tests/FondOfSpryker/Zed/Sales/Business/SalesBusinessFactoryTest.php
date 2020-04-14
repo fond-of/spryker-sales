@@ -5,8 +5,8 @@ namespace FondOfSpryker\Zed\Sales\Business\Model;
 use Codeception\Test\Unit;
 use FondOfSpryker\Zed\Sales\Business\Model\Order\SalesOrderSaver;
 use FondOfSpryker\Zed\Sales\Business\SalesBusinessFactory;
-use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface;
-use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToMoneyInterface;
+use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryFacadeInterface;
+use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToMoneyFacadeInterface;
 use FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface;
 use FondOfSpryker\Zed\Sales\SalesConfig;
 use FondOfSpryker\Zed\Sales\SalesDependencyProvider;
@@ -61,12 +61,12 @@ class SalesBusinessFactoryTest extends Unit
     protected $orderExpanderPlugins;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToMoneyInterface
+     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToMoneyFacadeInterface
      */
     protected $salesToMoneyInterfaceMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface
+     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryFacadeInterface
      */
     protected $salesToCountryInterfaceMock;
 
@@ -161,11 +161,11 @@ class SalesBusinessFactoryTest extends Unit
             $this->orderExpanderPluginInterfaceMock,
         ];
 
-        $this->salesToMoneyInterfaceMock = $this->getMockBuilder(SalesToMoneyInterface::class)
+        $this->salesToMoneyInterfaceMock = $this->getMockBuilder(SalesToMoneyFacadeInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->salesToCountryInterfaceMock = $this->getMockBuilder(SalesToCountryInterface::class)
+        $this->salesToCountryInterfaceMock = $this->getMockBuilder(SalesToCountryFacadeInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 

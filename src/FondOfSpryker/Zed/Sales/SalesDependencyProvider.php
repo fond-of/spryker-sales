@@ -2,8 +2,8 @@
 
 namespace FondOfSpryker\Zed\Sales;
 
-use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryBridge;
-use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToMoneyBridge;
+use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryFacadeBridge;
+use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToMoneyFacadeBridge;
 use Spryker\Zed\Kernel\Container;
 use Spryker\Zed\Sales\SalesDependencyProvider as SprykerSalesDependencyProvider;
 
@@ -35,7 +35,7 @@ class SalesDependencyProvider extends SprykerSalesDependencyProvider
     protected function addMoneyPlugin(Container $container): Container
     {
         $container[static::FACADE_MONEY] = function (Container $container) {
-            return new SalesToMoneyBridge($container->getLocator()->money()->facade());
+            return new SalesToMoneyFacadeBridge($container->getLocator()->money()->facade());
         };
 
         return $container;
@@ -49,7 +49,7 @@ class SalesDependencyProvider extends SprykerSalesDependencyProvider
     protected function addCountryFacade(Container $container): Container
     {
         $container[static::FACADE_COUNTRY] = function (Container $container) {
-            return new SalesToCountryBridge($container->getLocator()->country()->facade());
+            return new SalesToCountryFacadeBridge($container->getLocator()->country()->facade());
         };
 
         return $container;

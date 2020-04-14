@@ -4,7 +4,7 @@ namespace FondOfSpryker\Zed\Sales\Dependency\Facade;
 
 use Spryker\Zed\Sales\Dependency\Facade\SalesToMoneyBridge as SprykerSalesToMoneyBridge;
 
-class SalesToMoneyBridge extends SprykerSalesToMoneyBridge implements SalesToMoneyInterface
+class SalesToMoneyFacadeBridge extends SprykerSalesToMoneyBridge implements SalesToMoneyFacadeInterface
 {
     /**
      * @param float $value

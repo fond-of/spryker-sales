@@ -8,7 +8,7 @@ use FondOfSpryker\Zed\Country\Business\CountryFacadeInterface;
 class SalesToCountryBridgeTest extends Unit
 {
     /**
-     * @var \FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryBridge
+     * @var \FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryFacadeBridge
      */
     protected $salesToCountryBridge;
 
@@ -35,7 +35,7 @@ class SalesToCountryBridgeTest extends Unit
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->salesToCountryBridge = new SalesToCountryBridge($this->countryFacadeInterfaceMock);
+        $this->salesToCountryBridge = new SalesToCountryFacadeBridge($this->countryFacadeInterfaceMock);
     }
 
     /**
