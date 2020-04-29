@@ -3,9 +3,12 @@
 namespace FondOfSpryker\Shared\Sales;
 
 use Spryker\Shared\Sales\SalesConstants as SprykerSalesConstants;
+use Spryker\Shared\SequenceNumber\SequenceNumberConstants;
 
 interface SalesConstants extends SprykerSalesConstants
 {
-    public const ORDER_REFERENCE_PREFIX = 'ORDER_REFERENCE_PREFIX';
-    public const ORDER_REFERENCE_OFFSET = 'ORDER_REFERENCE_OFFSET';
+    public const REFERENCE_NAME_VALUE = 'OrderReference';
+    public const REFERENCE_PREFIX = 'SALES:REFERENCE_PREFIX';
+    public const REFERENCE_ENVIRONMENT_PREFIX = SequenceNumberConstants::ENVIRONMENT_PREFIX;
+    public const REFERENCE_OFFSET = 'SALES:REFERENCE_OFFSET';
 }

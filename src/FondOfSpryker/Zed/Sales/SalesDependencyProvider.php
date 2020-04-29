@@ -2,8 +2,6 @@
 
 namespace FondOfSpryker\Zed\Sales;
 
-use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryFacadeBridge;
-use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToMoneyFacadeBridge;
 use Spryker\Zed\Kernel\Container;
 use Spryker\Zed\Sales\SalesDependencyProvider as SprykerSalesDependencyProvider;
 
@@ -20,37 +18,7 @@ class SalesDependencyProvider extends SprykerSalesDependencyProvider
     {
         $container = parent::provideBusinessLayerDependencies($container);
 
-        $container = $this->addMoneyPlugin($container);
-        $container = $this->addCountryFacade($container);
         $container = $this->addSalesOrderAddressHydrationPlugins($container);
-
-        return $container;
-    }
-
-    /**
-     * @param \Spryker\Zed\Kernel\Container $container
-     *
-     * @return \Spryker\Zed\Kernel\Container
-     */
-    protected function addMoneyPlugin(Container $container): Container
-    {
-        $container[static::FACADE_MONEY] = function (Container $container) {
-            return new SalesToMoneyFacadeBridge($container->getLocator()->money()->facade());
-        };
-
-        return $container;
-    }
-
-    /**
-     * @param \Spryker\Zed\Kernel\Container $container
-     *
-     * @return \Spryker\Zed\Kernel\Container
-     */
-    protected function addCountryFacade(Container $container): Container
-    {
-        $container[static::FACADE_COUNTRY] = function (Container $container) {
-            return new SalesToCountryFacadeBridge($container->getLocator()->country()->facade());
-        };
 
         return $container;
     }
@@ -62,15 +30,17 @@ class SalesDependencyProvider extends SprykerSalesDependencyProvider
      */
     protected function addSalesOrderAddressHydrationPlugins(Container $container): Container
     {
-        $container[static::PLUGINS_SALES_ORDER_ADDRESS_HYDRATION] = function () {
-            return $this->getSalesOrderAddressHydrationPlugins();
+        $self = $this;
+
+        $container[static::PLUGINS_SALES_ORDER_ADDRESS_HYDRATION] = static function () use ($self) {
+            return $self->getSalesOrderAddressHydrationPlugins();
         };
 
         return $container;
     }
 
     /**
-     * @return \FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[]
+     * @return \FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[]
      */
     protected function getSalesOrderAddressHydrationPlugins(): array
     {

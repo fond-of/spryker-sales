@@ -1,27 +1,17 @@
 <?php
 
-namespace FondOfSpryker\Zed\Sales\Business\Model;
+namespace FondOfSpryker\Zed\Sales\Business;
 
 use Codeception\Test\Unit;
 use FondOfSpryker\Zed\Sales\Business\Model\Order\SalesOrderSaver;
-use FondOfSpryker\Zed\Sales\Business\SalesBusinessFactory;
-use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryFacadeInterface;
-use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToMoneyFacadeInterface;
-use FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface;
 use FondOfSpryker\Zed\Sales\SalesConfig;
 use FondOfSpryker\Zed\Sales\SalesDependencyProvider;
-use Generated\Shared\Transfer\SequenceNumberSettingsTransfer;
 use Spryker\Shared\Kernel\Store;
 use Spryker\Zed\Kernel\Container;
 use Spryker\Zed\Locale\Persistence\LocaleQueryContainerInterface;
-use Spryker\Zed\Sales\Business\Model\Order\OrderHydratorInterface;
+use Spryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface;
 use Spryker\Zed\Sales\Dependency\Facade\SalesToOmsInterface;
 use Spryker\Zed\Sales\Dependency\Facade\SalesToSequenceNumberInterface;
-use Spryker\Zed\Sales\Dependency\Plugin\OrderExpanderPreSavePluginInterface;
-use Spryker\Zed\Sales\Persistence\SalesQueryContainer;
-use Spryker\Zed\SalesExtension\Dependency\Plugin\OrderExpanderPluginInterface;
-use Spryker\Zed\SalesExtension\Dependency\Plugin\OrderItemExpanderPreSavePluginInterface;
-use Spryker\Zed\SalesExtension\Dependency\Plugin\OrderPostSavePluginInterface;
 
 class SalesBusinessFactoryTest extends Unit
 {
@@ -29,11 +19,6 @@ class SalesBusinessFactoryTest extends Unit
      * @var \FondOfSpryker\Zed\Sales\Business\SalesBusinessFactory
      */
     protected $salesBusinessFactory;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\Sales\Persistence\SalesQueryContainer
-     */
-    protected $salesQueryContainerInterfaceMock;
 
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\Sales\SalesConfig
@@ -48,42 +33,22 @@ class SalesBusinessFactoryTest extends Unit
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\Sales\Dependency\Facade\SalesToOmsInterface
      */
-    protected $salesToOmsInterfaceMock;
+    protected $omsFacadeMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\SalesExtension\Dependency\Plugin\OrderExpanderPluginInterface
+     * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface
      */
-    protected $orderExpanderPluginInterfaceMock;
-
-    /**
-     * @var array
-     */
-    protected $orderExpanderPlugins;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToMoneyFacadeInterface
-     */
-    protected $salesToMoneyInterfaceMock;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryFacadeInterface
-     */
-    protected $salesToCountryInterfaceMock;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Generated\Shared\Transfer\SequenceNumberSettingsTransfer
-     */
-    protected $sequenceNumberSettingsTransferMock;
+    protected $countryFacadeMock;
 
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\Sales\Dependency\Facade\SalesToSequenceNumberInterface
      */
-    protected $salesToSequenceNumberInterfaceMock;
+    protected $sequenceNumberFacadeMock;
 
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\Locale\Persistence\LocaleQueryContainerInterface
      */
-    protected $localeQueryContainerInterfaceMock;
+    protected $localeQueryContainerMock;
 
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Shared\Kernel\Store
@@ -91,42 +56,22 @@ class SalesBusinessFactoryTest extends Unit
     protected $storeMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\Sales\Dependency\Plugin\OrderExpanderPreSavePluginInterface
-     */
-    protected $orderExpanderPreSavePluginInterfaceMock;
-
-    /**
-     * @var array
+     * @var \PHPUnit\Framework\MockObject\MockObject[]|\Spryker\Zed\Sales\Dependency\Plugin\OrderExpanderPreSavePluginInterface[]
      */
     protected $orderExpanderPreSavePlugins;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\SalesExtension\Dependency\Plugin\OrderPostSavePluginInterface
-     */
-    protected $orderPostSavePluginInterfaceMock;
-
-    /**
-     * @var array
+     * @var \PHPUnit\Framework\MockObject\MockObject[]|\Spryker\Zed\SalesExtension\Dependency\Plugin\OrderPostSavePluginInterface[]
      */
     protected $orderPostSavePlugins;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\SalesExtension\Dependency\Plugin\OrderItemExpanderPreSavePluginInterface
-     */
-    protected $orderItemExpanderPreSavePluginInterfaceMock;
-
-    /**
-     * @var array
+     * @var \PHPUnit\Framework\MockObject\MockObject[]|\Spryker\Zed\SalesExtension\Dependency\Plugin\OrderItemExpanderPreSavePluginInterface[]
      */
     protected $orderItemExpanderPreSavePlugins;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface
-     */
-    protected $salesOrderAddressHydrationPluginMock;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject[]|\FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[]
+     * @var \PHPUnit\Framework\MockObject\MockObject[]|\FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[]
      */
     protected $salesOrderAddressHydrationPlugins;
 
@@ -137,47 +82,27 @@ class SalesBusinessFactoryTest extends Unit
     {
         parent::_before();
 
-        $this->salesConfigMock = $this->getMockBuilder(SalesConfig::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->salesQueryContainerInterfaceMock = $this->getMockBuilder(SalesQueryContainer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $this->containerMock = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->salesToOmsInterfaceMock = $this->getMockBuilder(SalesToOmsInterface::class)
+        $this->salesConfigMock = $this->getMockBuilder(SalesConfig::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->orderExpanderPluginInterfaceMock = $this->getMockBuilder(OrderExpanderPluginInterface::class)
+        $this->omsFacadeMock = $this->getMockBuilder(SalesToOmsInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->orderExpanderPlugins = [
-            $this->orderExpanderPluginInterfaceMock,
-        ];
-
-        $this->salesToMoneyInterfaceMock = $this->getMockBuilder(SalesToMoneyFacadeInterface::class)
+        $this->countryFacadeMock = $this->getMockBuilder(SalesToCountryInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->salesToCountryInterfaceMock = $this->getMockBuilder(SalesToCountryFacadeInterface::class)
+        $this->sequenceNumberFacadeMock = $this->getMockBuilder(SalesToSequenceNumberInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->sequenceNumberSettingsTransferMock = $this->getMockBuilder(SequenceNumberSettingsTransfer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->salesToSequenceNumberInterfaceMock = $this->getMockBuilder(SalesToSequenceNumberInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->localeQueryContainerInterfaceMock = $this->getMockBuilder(LocaleQueryContainerInterface::class)
+        $this->localeQueryContainerMock = $this->getMockBuilder(LocaleQueryContainerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -185,40 +110,12 @@ class SalesBusinessFactoryTest extends Unit
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->orderExpanderPreSavePluginInterfaceMock = $this->getMockBuilder(OrderExpanderPreSavePluginInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->orderExpanderPreSavePlugins = [
-            $this->orderExpanderPreSavePluginInterfaceMock,
-        ];
-
-        $this->orderItemExpanderPreSavePluginInterfaceMock = $this->getMockBuilder(OrderItemExpanderPreSavePluginInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->orderItemExpanderPreSavePlugins = [
-            $this->orderItemExpanderPreSavePluginInterfaceMock,
-        ];
-
-        $this->orderPostSavePluginInterfaceMock = $this->getMockBuilder(OrderPostSavePluginInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->orderPostSavePlugins = [
-            $this->orderPostSavePluginInterfaceMock,
-        ];
-
-        $this->salesOrderAddressHydrationPluginMock = $this->getMockBuilder(SalesOrderAddressHydrationPluginInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->salesOrderAddressHydrationPlugins = [
-            $this->salesOrderAddressHydrationPluginMock,
-        ];
+        $this->orderExpanderPreSavePlugins = [];
+        $this->orderItemExpanderPreSavePlugins = [];
+        $this->orderPostSavePlugins = [];
+        $this->salesOrderAddressHydrationPlugins = [];
 
         $this->salesBusinessFactory = new SalesBusinessFactory();
-        $this->salesBusinessFactory->setQueryContainer($this->salesQueryContainerInterfaceMock);
         $this->salesBusinessFactory->setConfig($this->salesConfigMock);
         $this->salesBusinessFactory->setContainer($this->containerMock);
     }
@@ -226,44 +123,12 @@ class SalesBusinessFactoryTest extends Unit
     /**
      * @return void
      */
-    public function testCreateOrderHydrator(): void
-    {
-        $this->containerMock->expects($this->atLeastOnce())
-            ->method('has')
-            ->willReturnOnConsecutiveCalls(
-                true,
-                true,
-                true
-            );
-
-        $this->containerMock->expects($this->atLeastOnce())
-            ->method('get')
-            ->withConsecutive(
-                [SalesDependencyProvider::FACADE_OMS],
-                [SalesDependencyProvider::HYDRATE_ORDER_PLUGINS],
-                [SalesDependencyProvider::FACADE_MONEY]
-            )
-            ->willReturnOnConsecutiveCalls(
-                $this->salesToOmsInterfaceMock,
-                $this->orderExpanderPlugins,
-                $this->salesToMoneyInterfaceMock
-            );
-
-        $this->assertInstanceOf(OrderHydratorInterface::class, $this->salesBusinessFactory->createOrderHydrator());
-    }
-
-    /**
-     * @return void
-     */
     public function testCreateSalesOrderSaver(): void
     {
-        $this->salesConfigMock->expects($this->atLeastOnce())
-            ->method('getOrderReferenceDefaults')
-            ->willReturn($this->sequenceNumberSettingsTransferMock);
-
         $this->containerMock->expects($this->atLeastOnce())
             ->method('has')
             ->willReturnOnConsecutiveCalls(
+                true,
                 true,
                 true,
                 true,
@@ -281,6 +146,7 @@ class SalesBusinessFactoryTest extends Unit
                 [SalesDependencyProvider::FACADE_COUNTRY],
                 [SalesDependencyProvider::FACADE_OMS],
                 [SalesDependencyProvider::FACADE_SEQUENCE_NUMBER],
+                [SalesDependencyProvider::STORE],
                 [SalesDependencyProvider::QUERY_CONTAINER_LOCALE],
                 [SalesDependencyProvider::STORE],
                 [SalesDependencyProvider::ORDER_EXPANDER_PRE_SAVE_PLUGINS],
@@ -289,10 +155,11 @@ class SalesBusinessFactoryTest extends Unit
                 [SalesDependencyProvider::PLUGINS_SALES_ORDER_ADDRESS_HYDRATION]
             )
             ->willReturnOnConsecutiveCalls(
-                $this->salesToCountryInterfaceMock,
-                $this->salesToOmsInterfaceMock,
-                $this->salesToSequenceNumberInterfaceMock,
-                $this->localeQueryContainerInterfaceMock,
+                $this->countryFacadeMock,
+                $this->omsFacadeMock,
+                $this->sequenceNumberFacadeMock,
+                $this->storeMock,
+                $this->localeQueryContainerMock,
                 $this->storeMock,
                 $this->orderExpanderPreSavePlugins,
                 $this->orderItemExpanderPreSavePlugins,

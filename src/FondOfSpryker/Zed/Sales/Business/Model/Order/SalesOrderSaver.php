@@ -2,7 +2,6 @@
 
 namespace FondOfSpryker\Zed\Sales\Business\Model\Order;
 
-use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryFacadeInterface;
 use Generated\Shared\Transfer\AddressTransfer;
 use Orm\Zed\Sales\Persistence\SpySalesOrderAddress;
 use Spryker\Shared\Kernel\Store;
@@ -18,7 +17,7 @@ use Spryker\Zed\Sales\SalesConfig;
 class SalesOrderSaver extends SprykerSalesOrderSaver
 {
     /**
-     * @var array
+     * @var \FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[]
      */
     protected $salesOrderAddressHydrationPlugins;
 
@@ -33,7 +32,7 @@ class SalesOrderSaver extends SprykerSalesOrderSaver
      * @param \Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaverPluginExecutorInterface $salesOrderSaverPluginExecutor
      * @param \Spryker\Zed\Sales\Persistence\Propel\Mapper\SalesOrderItemMapperInterface $salesOrderItemMapper
      * @param \Spryker\Zed\SalesExtension\Dependency\Plugin\OrderPostSavePluginInterface[] $orderPostSavePlugins
-     * @param \FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[] $salesOrderAddressHydrationPlugins
+     * @param \FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[] $salesOrderAddressHydrationPlugins
      */
     public function __construct(
         SalesToCountryInterface $countryFacade,
@@ -75,12 +74,6 @@ class SalesOrderSaver extends SprykerSalesOrderSaver
         SpySalesOrderAddress $salesOrderAddressEntity
     ): void {
         parent::hydrateSalesOrderAddress($addressTransfer, $salesOrderAddressEntity);
-
-        if ($this->countryFacade instanceof SalesToCountryFacadeInterface && $addressTransfer->getRegion()) {
-            $salesOrderAddressEntity->setFkRegion(
-                $this->countryFacade->getIdRegionByIso2Code($addressTransfer->getRegion())
-            );
-        }
 
         foreach ($this->salesOrderAddressHydrationPlugins as $salesOrderAddressHydrationPlugin) {
             $salesOrderAddressEntity = $salesOrderAddressHydrationPlugin->hydrate(

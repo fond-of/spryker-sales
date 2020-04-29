@@ -3,27 +3,22 @@
 namespace FondOfSpryker\Zed\Sales\Business\Model\Order;
 
 use Codeception\Test\Unit;
-use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryFacadeInterface;
-use FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface;
 use FondOfSpryker\Zed\Sales\SalesConfig;
+use FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface;
 use Generated\Shared\Transfer\AddressTransfer;
-use ReflectionClass;
+use ReflectionMethod;
 use Spryker\Shared\Kernel\Store;
 use Spryker\Zed\Locale\Persistence\LocaleQueryContainerInterface;
 use Spryker\Zed\Sales\Business\Model\Order\OrderReferenceGeneratorInterface;
 use Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaverPluginExecutorInterface;
-use Spryker\Zed\Sales\Business\Model\OrderItem\SalesOrderItemMapperInterface;
+use Spryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface;
 use Spryker\Zed\Sales\Dependency\Facade\SalesToOmsInterface;
+use Spryker\Zed\Sales\Persistence\Propel\Mapper\SalesOrderItemMapperInterface;
 
 class SalesOrderSaverTest extends Unit
 {
     /**
-     * @var \FondOfSpryker\Zed\Sales\Business\Model\Order\SalesOrderSaver
-     */
-    protected $salesOrderSaver;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryFacadeInterface
+     * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface
      */
     protected $countryFacadeMock;
 
@@ -53,17 +48,17 @@ class SalesOrderSaverTest extends Unit
     protected $storeMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaverPluginExecutorInterface
      */
     protected $salesOrderSaverPluginExecutorMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\Sales\Business\Model\OrderItem\SalesOrderItemMapperInterface
+     * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\Sales\Persistence\Propel\Mapper\SalesOrderItemMapperInterface
      */
     protected $salesOrderItemMapperMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface
+     * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface
      */
     protected $salesOrderAddressHydrationPluginMock;
 
@@ -78,13 +73,18 @@ class SalesOrderSaverTest extends Unit
     protected $salesOrderAddressEntityMock;
 
     /**
+     * @var \FondOfSpryker\Zed\Sales\Business\Model\Order\SalesOrderSaver
+     */
+    protected $salesOrderSaver;
+
+    /**
      * @return void
      */
     protected function _before(): void
     {
         parent::_before();
 
-        $this->countryFacadeMock = $this->getMockBuilder(SalesToCountryFacadeInterface::class)
+        $this->countryFacadeMock = $this->getMockBuilder(SalesToCountryInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -152,9 +152,6 @@ class SalesOrderSaverTest extends Unit
         $idCountry = 61;
         $countryIso2Code = 'DE';
 
-        $idRegion = 10;
-        $regionIso2Code = 'DE-NW';
-
         $addressTransferAsArray = [];
 
         $this->addressTransferMock->expects($this->atLeastOnce())
@@ -180,31 +177,14 @@ class SalesOrderSaverTest extends Unit
             ->with($idCountry)
             ->willReturn($this->salesOrderAddressEntityMock);
 
-        $this->addressTransferMock->expects($this->atLeastOnce())
-            ->method('getRegion')
-            ->willReturn($regionIso2Code);
-
-        $this->countryFacadeMock->expects($this->atLeastOnce())
-            ->method('getIdRegionByIso2Code')
-            ->with($regionIso2Code)
-            ->willReturn($idRegion);
-
-        $this->salesOrderAddressEntityMock->expects($this->atLeastOnce())
-            ->method('setFkRegion')
-            ->with($idRegion)
-            ->willReturn($this->salesOrderAddressEntityMock);
-
         $this->salesOrderAddressHydrationPluginMock->expects($this->atLeastOnce())
             ->method('hydrate')
             ->with($this->addressTransferMock, $this->salesOrderAddressEntityMock)
             ->willReturn($this->salesOrderAddressEntityMock);
 
-        $reflectionClass = new ReflectionClass(SalesOrderSaver::class);
-
-        $reflectionMethod = $reflectionClass->getMethod('hydrateSalesOrderAddress');
-        $reflectionMethod->setAccessible(true);
-
-        $reflectionMethod->invokeArgs($this->salesOrderSaver, [
+        $method = new ReflectionMethod(get_class($this->salesOrderSaver), 'hydrateSalesOrderAddress');
+        $method->setAccessible(true);
+        $method->invokeArgs($this->salesOrderSaver, [
             $this->addressTransferMock, $this->salesOrderAddressEntityMock,
         ]);
     }
