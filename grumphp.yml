@@ -10,5 +10,5 @@ parameters:
     phpcs:
       standard: vendor/spryker/code-sniffer/Spryker/ruleset.xml
     phpcpd:
-      exclude: ['vendor', 'tests', 'src/Generated', 'src/Orm']
+      exclude: ['vendor', 'tests', 'src/Generated']
     codeception: ~
