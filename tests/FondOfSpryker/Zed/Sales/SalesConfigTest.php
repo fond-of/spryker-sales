@@ -10,14 +10,14 @@ class SalesConfigTest extends Unit
     /**
      * @var \FondOfSpryker\Zed\Sales\SalesConfig|\PHPUnit\Framework\MockObject\MockObject
      */
-    protected $logConfig;
+    protected $salesConfig;
 
     /**
      * @return void
      */
     protected function _before(): void
     {
-        $this->logConfig = $this->getMockBuilder(SalesConfig::class)
+        $this->salesConfig = $this->getMockBuilder(SalesConfig::class)
             ->onlyMethods(['get'])
             ->getMock();
     }
@@ -27,12 +27,12 @@ class SalesConfigTest extends Unit
      */
     public function testGetReferenceEnvironmentPrefix(): void
     {
-        $this->logConfig->expects($this->atLeastOnce())
+        $this->salesConfig->expects($this->atLeastOnce())
             ->method('get')
             ->with(SalesConstants::REFERENCE_ENVIRONMENT_PREFIX, null)
             ->willReturn(null);
 
-        $this->assertEquals(null, $this->logConfig->getReferenceEnvironmentPrefix());
+        $this->assertEquals(null, $this->salesConfig->getReferenceEnvironmentPrefix());
     }
 
     /**
@@ -40,12 +40,12 @@ class SalesConfigTest extends Unit
      */
     public function testGetReferenceOffset(): void
     {
-        $this->logConfig->expects($this->atLeastOnce())
+        $this->salesConfig->expects($this->atLeastOnce())
             ->method('get')
             ->with(SalesConstants::REFERENCE_OFFSET, null)
             ->willReturn(null);
 
-        $this->assertEquals(null, $this->logConfig->getReferenceOffset());
+        $this->assertEquals(null, $this->salesConfig->getReferenceOffset());
     }
 
     /**
@@ -53,12 +53,12 @@ class SalesConfigTest extends Unit
      */
     public function testGetReferencePrefix(): void
     {
-        $this->logConfig->expects($this->atLeastOnce())
+        $this->salesConfig->expects($this->atLeastOnce())
             ->method('get')
             ->with(SalesConstants::REFERENCE_PREFIX, null)
             ->willReturn(null);
 
-        $this->assertEquals(null, $this->logConfig->getReferencePrefix());
+        $this->assertEquals(null, $this->salesConfig->getReferencePrefix());
     }
 
     /**
@@ -68,12 +68,12 @@ class SalesConfigTest extends Unit
     {
         $environmentPrefix = 'DEV';
 
-        $this->logConfig->expects($this->atLeastOnce())
+        $this->salesConfig->expects($this->atLeastOnce())
             ->method('get')
             ->with(SalesConstants::REFERENCE_ENVIRONMENT_PREFIX, null)
             ->willReturn($environmentPrefix);
 
-        $this->assertEquals($environmentPrefix, $this->logConfig->getReferenceEnvironmentPrefix());
+        $this->assertEquals($environmentPrefix, $this->salesConfig->getReferenceEnvironmentPrefix());
     }
 
     /**
@@ -83,12 +83,12 @@ class SalesConfigTest extends Unit
     {
         $offset = 10;
 
-        $this->logConfig->expects($this->atLeastOnce())
+        $this->salesConfig->expects($this->atLeastOnce())
             ->method('get')
             ->with(SalesConstants::REFERENCE_OFFSET, null)
             ->willReturn($offset);
 
-        $this->assertEquals($offset, $this->logConfig->getReferenceOffset());
+        $this->assertEquals($offset, $this->salesConfig->getReferenceOffset());
     }
 
     /**
@@ -98,11 +98,11 @@ class SalesConfigTest extends Unit
     {
         $prefix = 'PREFIX';
 
-        $this->logConfig->expects($this->atLeastOnce())
+        $this->salesConfig->expects($this->atLeastOnce())
             ->method('get')
             ->with(SalesConstants::REFERENCE_PREFIX, null)
             ->willReturn($prefix);
 
-        $this->assertEquals($prefix, $this->logConfig->getReferencePrefix());
+        $this->assertEquals($prefix, $this->salesConfig->getReferencePrefix());
     }
 }
