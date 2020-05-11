@@ -27,7 +27,7 @@ class SalesConfig extends SprykerSalesConfig
             $sequenceNumberPrefixParts[] = $this->get(SalesConstants::ENVIRONMENT_PREFIX);
         }
 
-        $prefix = implode($this->getUniqueIdentifierSeparator(), $sequenceNumberPrefixParts) . $this->getUniqueIdentifierSeparator();
+        $prefix = $this->createPrefix($sequenceNumberPrefixParts);
 
         $sequenceNumberSettingsTransfer->setPrefix($prefix);
 
@@ -37,4 +37,30 @@ class SalesConfig extends SprykerSalesConfig
 
         return $sequenceNumberSettingsTransfer;
     }
+
+    /**
+     * @param  array  $sequenceNumberPrefixParts
+     *
+     * @return string
+     */
+    protected function createPrefix(array $sequenceNumberPrefixParts): string
+    {
+        $separator = $this->getUniqueIdentifierSeparator();
+        $prefix = implode($separator, $sequenceNumberPrefixParts);
+
+        if ($this->getUseSeparatorToConnectPrefixToOrderNo() === false){
+            $separator = '';
+        }
+
+        return sprintf('%s%s', $prefix, $separator);
+    }
+
+    /**
+     * @return bool
+     */
+    protected function getUseSeparatorToConnectPrefixToOrderNo(): bool
+    {
+        return $this->get(SalesConstants::ORDER_REFERENCE_USE_SEPARATOR_TO_CONNECT_PREFIX_TO_ORDER_NUMBER, true);
+    }
+
 }
