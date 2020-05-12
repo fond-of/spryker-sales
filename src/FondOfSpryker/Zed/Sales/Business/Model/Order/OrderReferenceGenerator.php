@@ -90,11 +90,24 @@ class OrderReferenceGenerator implements OrderReferenceGeneratorInterface
             $sequenceNumberPrefixParts[] = $referenceEnvironmentPrefix;
         }
 
-        return sprintf(
-            '%s%s',
-            implode($this->getUniqueIdentifierSeparator(), $sequenceNumberPrefixParts),
-            $this->getUniqueIdentifierSeparator()
-        );
+        return $this->createPrefix($sequenceNumberPrefixParts);
+    }
+
+    /**
+     * @param  array  $sequenceNumberPrefixParts
+     *
+     * @return string
+     */
+    protected function createPrefix(array $sequenceNumberPrefixParts): string
+    {
+        $separator = $this->getUniqueIdentifierSeparator();
+        $prefix = implode($separator, $sequenceNumberPrefixParts);
+
+        if ($this->config->getUseSeparatorToConnectPrefixToOrderNo() === false){
+            $separator = '';
+        }
+
+        return sprintf('%s%s', $prefix, $separator);
     }
 
     /**
