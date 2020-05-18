@@ -3,8 +3,6 @@
 namespace FondOfSpryker\Zed\Sales;
 
 use FondOfSpryker\Shared\Sales\SalesConstants;
-use Generated\Shared\Transfer\SequenceNumberSettingsTransfer;
-use Spryker\Shared\Kernel\Store;
 use Spryker\Zed\Sales\SalesConfig as SprykerSalesConfig;
 
 class SalesConfig extends SprykerSalesConfig
@@ -36,9 +34,8 @@ class SalesConfig extends SprykerSalesConfig
     /**
      * @return bool
      */
-    public function getUseSeparatorToConnectPrefixToOrderNo(): bool
+    public function getUseSeparatorToConnectPrefixToOrderNumber(): bool
     {
-        return $this->get(SalesConstants::ORDER_REFERENCE_USE_SEPARATOR_TO_CONNECT_PREFIX_TO_ORDER_NUMBER, true);
+        return $this->get(SalesConstants::USE_SEPARATOR_TO_CONNECT_PREFIX_TO_ORDER_NUMBER, true);
     }
-
 }

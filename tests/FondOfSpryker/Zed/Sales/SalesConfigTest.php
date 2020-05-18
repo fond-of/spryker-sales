@@ -105,4 +105,30 @@ class SalesConfigTest extends Unit
 
         $this->assertEquals($prefix, $this->salesConfig->getReferencePrefix());
     }
+
+    /**
+     * @return void
+     */
+    public function testGetUseSeparatorToConnectPrefixToOrderNumber(): void
+    {
+        $this->salesConfig->expects($this->atLeastOnce())
+            ->method('get')
+            ->with(SalesConstants::USE_SEPARATOR_TO_CONNECT_PREFIX_TO_ORDER_NUMBER, true)
+            ->willReturn(true);
+
+        $this->assertTrue($this->salesConfig->getUseSeparatorToConnectPrefixToOrderNumber());
+    }
+
+    /**
+     * @return void
+     */
+    public function testGetUseSeparatorToConnectPrefixToOrderNumberWithCustomValue(): void
+    {
+        $this->salesConfig->expects($this->atLeastOnce())
+            ->method('get')
+            ->with(SalesConstants::USE_SEPARATOR_TO_CONNECT_PREFIX_TO_ORDER_NUMBER, true)
+            ->willReturn(false);
+
+        $this->assertFalse($this->salesConfig->getUseSeparatorToConnectPrefixToOrderNumber());
+    }
 }
