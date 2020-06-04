@@ -94,7 +94,7 @@ class OrderReferenceGenerator implements OrderReferenceGeneratorInterface
     }
 
     /**
-     * @param  array  $sequenceNumberPrefixParts
+     * @param array $sequenceNumberPrefixParts
      *
      * @return string
      */
@@ -103,7 +103,7 @@ class OrderReferenceGenerator implements OrderReferenceGeneratorInterface
         $separator = $this->getUniqueIdentifierSeparator();
         $prefix = implode($separator, $sequenceNumberPrefixParts);
 
-        if ($this->config->getUseSeparatorToConnectPrefixToOrderNumber() === false){
+        if ($this->config->getUseSeparatorToConnectPrefixToOrderNumber() === false) {
             $separator = '';
         }
 
