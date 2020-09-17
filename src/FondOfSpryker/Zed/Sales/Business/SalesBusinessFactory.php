@@ -2,9 +2,12 @@
 
 namespace FondOfSpryker\Zed\Sales\Business;
 
+use FondOfSpryker\Zed\Sales\Business\Address\OrderAddressWriter;
 use FondOfSpryker\Zed\Sales\Business\Model\Order\OrderReferenceGenerator;
 use FondOfSpryker\Zed\Sales\Business\Model\Order\SalesOrderSaver;
 use FondOfSpryker\Zed\Sales\SalesDependencyProvider;
+use Spryker\Zed\Sales\Business\Address\OrderAddressWriter as SprykerOrderAddressWriter;
+use Spryker\Zed\Sales\Business\Address\OrderAddressWriterInterface;
 use Spryker\Zed\Sales\Business\Model\Order\OrderReferenceGeneratorInterface;
 use Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaverInterface;
 use Spryker\Zed\Sales\Business\SalesBusinessFactory as SprykerSalesBusinessFactory;
@@ -54,4 +57,25 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
             $this->getConfig()
         );
     }
+
+    /**
+     * @return \Spryker\Zed\Sales\Business\Address\OrderAddressWriterInterface
+     */
+    public function createOrderAddressWriter(): OrderAddressWriterInterface
+    {
+        $spyOrderAddressWriter = new SprykerOrderAddressWriter($this->getEntityManager(), $this->getCountryFacade());
+        return new OrderAddressWriter(
+            $spyOrderAddressWriter,
+            $this->getOrderAddressExpanderPlugins()
+        );
+    }
+
+    /**
+     * @return \FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\OrderAddressExpanderPluginInterface[]
+     */
+    private function getOrderAddressExpanderPlugins(): array
+    {
+        return $this->getProvidedDependency(SalesDependencyProvider::PLUGINS_ORDER_ADDRESS_EXPANDER);
+    }
+
 }
