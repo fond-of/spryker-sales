@@ -11,6 +11,7 @@ class OrderAddressWriter implements OrderAddressWriterInterface
      * @var \FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\OrderAddressExpanderPluginInterface[]
      */
     protected $orderAddressExpanderPlugins;
+
     /**
      * @var \Spryker\Zed\Sales\Business\Address\OrderAddressWriterInterface
      */
@@ -18,7 +19,7 @@ class OrderAddressWriter implements OrderAddressWriterInterface
 
     /**
      * @param \Spryker\Zed\Sales\Business\Address\OrderAddressWriterInterface $orderAddressWriter
-     * @param array $orderAddressExpanderPlugins
+     * @param \FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\OrderAddressExpanderPluginInterface[] $orderAddressExpanderPlugins
      */
     public function __construct(
         OrderAddressWriterInterface $orderAddressWriter,
