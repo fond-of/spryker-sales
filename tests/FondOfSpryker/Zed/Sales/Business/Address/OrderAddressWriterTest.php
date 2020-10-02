@@ -3,7 +3,7 @@
 namespace FondOfSpryker\Zed\Sales\Business\Address;
 
 use Codeception\Test\Unit;
-use FondOfSpryker\Zed\SalesRegionConnector\Communication\Plugin\SalesExtension\RegionOrderAddressExpanderPlugin;
+use FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\OrderAddressExpanderPluginInterface;
 use Generated\Shared\Transfer\AddressTransfer;
 use Spryker\Zed\Sales\Business\Address\OrderAddressWriter as SprykerOrderAddressWriter;
 
@@ -13,10 +13,12 @@ class OrderAddressWriterTest extends Unit
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $addressTransferMock;
+
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $sprykerOrderAddressWriterMock;
+    
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
@@ -35,7 +37,7 @@ class OrderAddressWriterTest extends Unit
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->orderAddressExpanderPluginMock = $this->getMockBuilder(RegionOrderAddressExpanderPlugin::class)
+        $this->orderAddressExpanderPluginMock = $this->getMockBuilder(OrderAddressExpanderPluginInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
