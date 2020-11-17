@@ -9,20 +9,15 @@ use Spryker\Zed\Locale\Persistence\LocaleQueryContainerInterface;
 use Spryker\Zed\Sales\Business\Model\Order\OrderReferenceGeneratorInterface;
 use Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaver as SprykerSalesOrderSaver;
 use Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaverPluginExecutorInterface;
-use Spryker\Zed\Sales\Business\Model\OrderItem\SalesOrderItemMapperInterface;
 use Spryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface;
 use Spryker\Zed\Sales\Dependency\Facade\SalesToOmsInterface;
+use Spryker\Zed\Sales\Persistence\Propel\Mapper\SalesOrderItemMapperInterface;
 use Spryker\Zed\Sales\SalesConfig;
 
 class SalesOrderSaver extends SprykerSalesOrderSaver
 {
     /**
-     * @var \FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface
-     */
-    protected $countryFacade;
-
-    /**
-     * @var array
+     * @var \FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[]
      */
     protected $salesOrderAddressHydrationPlugins;
 
@@ -33,11 +28,11 @@ class SalesOrderSaver extends SprykerSalesOrderSaver
      * @param \Spryker\Zed\Sales\SalesConfig $salesConfiguration
      * @param \Spryker\Zed\Locale\Persistence\LocaleQueryContainerInterface $localeQueryContainer
      * @param \Spryker\Shared\Kernel\Store $store
-     * @param $orderExpanderPreSavePlugins
+     * @param \Spryker\Zed\Sales\Dependency\Plugin\OrderExpanderPreSavePluginInterface[] $orderExpanderPreSavePlugins
      * @param \Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaverPluginExecutorInterface $salesOrderSaverPluginExecutor
-     * @param \Spryker\Zed\Sales\Business\Model\OrderItem\SalesOrderItemMapperInterface $salesOrderItemMapper
-     * @param array $orderPostSavePlugins
-     * @param \FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[] $salesOrderAddressHydrationPlugins
+     * @param \Spryker\Zed\Sales\Persistence\Propel\Mapper\SalesOrderItemMapperInterface $salesOrderItemMapper
+     * @param \Spryker\Zed\SalesExtension\Dependency\Plugin\OrderPostSavePluginInterface[] $orderPostSavePlugins
+     * @param \FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[] $salesOrderAddressHydrationPlugins
      */
     public function __construct(
         SalesToCountryInterface $countryFacade,
@@ -79,12 +74,6 @@ class SalesOrderSaver extends SprykerSalesOrderSaver
         SpySalesOrderAddress $salesOrderAddressEntity
     ): void {
         parent::hydrateSalesOrderAddress($addressTransfer, $salesOrderAddressEntity);
-
-        if ($addressTransfer->getRegion()) {
-            $salesOrderAddressEntity->setFkRegion(
-                $this->countryFacade->getIdRegionByIso2Code($addressTransfer->getRegion())
-            );
-        }
 
         foreach ($this->salesOrderAddressHydrationPlugins as $salesOrderAddressHydrationPlugin) {
             $salesOrderAddressEntity = $salesOrderAddressHydrationPlugin->hydrate(

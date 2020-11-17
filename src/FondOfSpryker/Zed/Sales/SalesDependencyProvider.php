@@ -2,14 +2,13 @@
 
 namespace FondOfSpryker\Zed\Sales;
 
-use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToCountryBridge;
-use FondOfSpryker\Zed\Sales\Dependency\Facade\SalesToMoneyBridge;
 use Spryker\Zed\Kernel\Container;
 use Spryker\Zed\Sales\SalesDependencyProvider as SprykerSalesDependencyProvider;
 
 class SalesDependencyProvider extends SprykerSalesDependencyProvider
 {
     public const PLUGINS_SALES_ORDER_ADDRESS_HYDRATION = 'PLUGINS_SALES_ORDER_ADDRESS_HYDRATION';
+    public const PLUGINS_ORDER_ADDRESS_EXPANDER = 'PLUGINS_ORDER_ADDRESS_EXPANDER';
 
     /**
      * @param \Spryker\Zed\Kernel\Container $container
@@ -20,37 +19,8 @@ class SalesDependencyProvider extends SprykerSalesDependencyProvider
     {
         $container = parent::provideBusinessLayerDependencies($container);
 
-        $container = $this->addMoneyPlugin($container);
-        $container = $this->addCountryFacade($container);
         $container = $this->addSalesOrderAddressHydrationPlugins($container);
-
-        return $container;
-    }
-
-    /**
-     * @param \Spryker\Zed\Kernel\Container $container
-     *
-     * @return \Spryker\Zed\Kernel\Container
-     */
-    protected function addMoneyPlugin(Container $container): Container
-    {
-        $container[static::FACADE_MONEY] = function (Container $container) {
-            return new SalesToMoneyBridge($container->getLocator()->money()->facade());
-        };
-
-        return $container;
-    }
-
-    /**
-     * @param \Spryker\Zed\Kernel\Container $container
-     *
-     * @return \Spryker\Zed\Kernel\Container
-     */
-    protected function addCountryFacade(Container $container): Container
-    {
-        $container[static::FACADE_COUNTRY] = function (Container $container) {
-            return new SalesToCountryBridge($container->getLocator()->country()->facade());
-        };
+        $container = $this->addOrderAddressExpanderPlugins($container);
 
         return $container;
     }
@@ -62,17 +32,43 @@ class SalesDependencyProvider extends SprykerSalesDependencyProvider
      */
     protected function addSalesOrderAddressHydrationPlugins(Container $container): Container
     {
-        $container[static::PLUGINS_SALES_ORDER_ADDRESS_HYDRATION] = function () {
-            return $this->getSalesOrderAddressHydrationPlugins();
+        $self = $this;
+
+        $container[static::PLUGINS_SALES_ORDER_ADDRESS_HYDRATION] = static function () use ($self) {
+            return $self->getSalesOrderAddressHydrationPlugins();
         };
 
         return $container;
     }
 
     /**
-     * @return \FondOfSpryker\Zed\Sales\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[]
+     * @param \Spryker\Zed\Kernel\Container $container
+     *
+     * @return \Spryker\Zed\Kernel\Container
+     */
+    protected function addOrderAddressExpanderPlugins(Container $container): Container
+    {
+        $self = $this;
+
+        $container[static::PLUGINS_ORDER_ADDRESS_EXPANDER] = static function () use ($self) {
+            return $self->getOrderAddressExpanderPlguins();
+        };
+
+        return $container;
+    }
+
+    /**
+     * @return \FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[]
      */
     protected function getSalesOrderAddressHydrationPlugins(): array
+    {
+        return [];
+    }
+
+    /**
+     * @return \FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\OrderAddressExpanderPluginInterface[]
+     */
+    protected function getOrderAddressExpanderPlguins(): array
     {
         return [];
     }
