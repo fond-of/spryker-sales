@@ -64,6 +64,7 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
     public function createOrderAddressWriter(): OrderAddressWriterInterface
     {
         $spyOrderAddressWriter = new SprykerOrderAddressWriter($this->getEntityManager(), $this->getCountryFacade());
+
         return new OrderAddressWriter(
             $spyOrderAddressWriter,
             $this->getOrderAddressExpanderPlugins()
@@ -77,5 +78,4 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
     {
         return $this->getProvidedDependency(SalesDependencyProvider::PLUGINS_ORDER_ADDRESS_EXPANDER);
     }
-
 }
