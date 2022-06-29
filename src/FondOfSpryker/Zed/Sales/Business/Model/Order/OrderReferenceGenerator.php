@@ -6,7 +6,7 @@ use FondOfSpryker\Shared\Sales\SalesConstants;
 use FondOfSpryker\Zed\Sales\SalesConfig;
 use Generated\Shared\Transfer\QuoteTransfer;
 use Generated\Shared\Transfer\SequenceNumberSettingsTransfer;
-use Spryker\Shared\Kernel\Store;
+use Spryker\Zed\Sales\Business\Model\Order\OrderReferenceGeneratorInterface;
 use Spryker\Zed\Sales\Dependency\Facade\SalesToSequenceNumberInterface;
 
 class OrderReferenceGenerator implements OrderReferenceGeneratorInterface
@@ -17,9 +17,9 @@ class OrderReferenceGenerator implements OrderReferenceGeneratorInterface
     protected $sequenceNumberFacade;
 
     /**
-     * @var \Spryker\Shared\Kernel\Store
+     * @var string
      */
-    protected $store;
+    protected $storeName;
 
     /**
      * @var \FondOfSpryker\Zed\Sales\SalesConfig
@@ -28,17 +28,17 @@ class OrderReferenceGenerator implements OrderReferenceGeneratorInterface
 
     /**
      * @param \Spryker\Zed\Sales\Dependency\Facade\SalesToSequenceNumberInterface $sequenceNumberFacade
-     * @param \Spryker\Shared\Kernel\Store $store
      * @param \FondOfSpryker\Zed\Sales\SalesConfig $config
+     * @param string $storeName
      */
     public function __construct(
         SalesToSequenceNumberInterface $sequenceNumberFacade,
-        Store $store,
-        SalesConfig $config
+        SalesConfig $config,
+        string $storeName
     ) {
         $this->sequenceNumberFacade = $sequenceNumberFacade;
-        $this->store = $store;
         $this->config = $config;
+        $this->storeName = $storeName;
     }
 
     /**
@@ -58,15 +58,10 @@ class OrderReferenceGenerator implements OrderReferenceGeneratorInterface
      */
     protected function getSequenceNumberSettingsTransfer(): SequenceNumberSettingsTransfer
     {
-        $sequenceNumberSettingsTransfer = (new SequenceNumberSettingsTransfer())
+        return (new SequenceNumberSettingsTransfer())
             ->setName(SalesConstants::REFERENCE_NAME_VALUE)
-            ->setPrefix($this->getSequenceNumberPrefix());
-
-        if ($this->config->getReferenceOffset() === null) {
-            return $sequenceNumberSettingsTransfer;
-        }
-
-        return $sequenceNumberSettingsTransfer->setOffset($this->config->getReferenceOffset());
+            ->setPrefix($this->getSequenceNumberPrefix())
+            ->setOffset($this->config->getReferenceOffset());
     }
 
     /**
@@ -74,19 +69,17 @@ class OrderReferenceGenerator implements OrderReferenceGeneratorInterface
      */
     protected function getSequenceNumberPrefix(): string
     {
-        $sequenceNumberPrefixParts = [
-            $this->store->getStoreName(),
-        ];
+        $sequenceNumberPrefixParts = [$this->storeName];
 
         $referencePrefix = $this->config->getReferencePrefix();
 
-        if ($referencePrefix !== null && $referencePrefix !== '') {
+        if ($referencePrefix !== '') {
             $sequenceNumberPrefixParts[0] = $referencePrefix;
         }
 
         $referenceEnvironmentPrefix = $this->config->getReferenceEnvironmentPrefix();
 
-        if ($referenceEnvironmentPrefix !== null && $referenceEnvironmentPrefix !== '') {
+        if ($referenceEnvironmentPrefix !== '') {
             $sequenceNumberPrefixParts[] = $referenceEnvironmentPrefix;
         }
 

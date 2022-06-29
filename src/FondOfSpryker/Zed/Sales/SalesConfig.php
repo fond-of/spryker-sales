@@ -5,30 +5,36 @@ namespace FondOfSpryker\Zed\Sales;
 use FondOfSpryker\Shared\Sales\SalesConstants;
 use Spryker\Zed\Sales\SalesConfig as SprykerSalesConfig;
 
+/**
+ * @codeCoverageIgnore
+ */
 class SalesConfig extends SprykerSalesConfig
 {
     /**
-     * @return string|null
+     * @return string
      */
-    public function getReferenceEnvironmentPrefix(): ?string
+    public function getReferenceEnvironmentPrefix(): string
     {
-        return $this->get(SalesConstants::REFERENCE_ENVIRONMENT_PREFIX, null);
+        return $this->get(
+            SalesConstants::REFERENCE_ENVIRONMENT_PREFIX,
+            SalesConstants::REFERENCE_ENVIRONMENT_PREFIX_DEFAULT,
+        );
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getReferencePrefix(): ?string
+    public function getReferencePrefix(): string
     {
-        return $this->get(SalesConstants::REFERENCE_PREFIX, null);
+        return $this->get(SalesConstants::REFERENCE_PREFIX, SalesConstants::REFERENCE_PREFIX_DEFAULT);
     }
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getReferenceOffset(): ?int
+    public function getReferenceOffset(): int
     {
-        return $this->get(SalesConstants::REFERENCE_OFFSET, null);
+        return $this->get(SalesConstants::REFERENCE_OFFSET, SalesConstants::REFERENCE_OFFSET_DEFAULT);
     }
 
     /**

@@ -6,25 +6,17 @@
     {
       "name": "Daniel Rose",
       "email": "daniel-rose@gmx.de"
-    },
-    {
-      "name": "Felix Pfister",
-      "email": "felix@pfister.de"
     }
   ],
   "require": {
-    "php": ">=7.2",
+    "php": ">=7.3",
     "spryker/sales": "^11.0.0",
     "fond-of-spryker/sales-extension": "dev-master"
   },
   "require-dev": {
-    "spryker/code-sniffer": "^0.14.7",
-    "codeception/codeception": "<4.1.2",
-    "mikey179/vfsstream": "^1.6",
-    "phpro/grumphp": "^0.14",
-    "sebastian/phpcpd": "^4.1",
-    "php-coveralls/php-coveralls": "^2.1",
-    "fond-of-codeception/spryker": "^1.0"
+    "fond-of-codeception/spryker": "^1.0",
+    "spryker/code-sniffer": "*",
+    "spryker-sdk/phpstan-spryker": "*"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
@@ -36,7 +28,13 @@
   "autoload-dev": {
     "psr-4": {
       "FondOfSpryker\\": "tests/FondOfSpryker/",
-      "Generated\\": "src/Generated/"
+      "Generated\\": "src/Generated/",
+      "Orm\\Zed\\": "src/Orm/Zed/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
     }
   }
 }

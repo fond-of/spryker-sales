@@ -18,7 +18,7 @@ class OrderAddressWriterTest extends Unit
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $sprykerOrderAddressWriterMock;
-    
+
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
@@ -49,7 +49,7 @@ class OrderAddressWriterTest extends Unit
     {
         $orderAddressWriter = new OrderAddressWriter(
             $this->sprykerOrderAddressWriterMock,
-            []
+            [],
         );
 
          $this->sprykerOrderAddressWriterMock
@@ -74,7 +74,7 @@ class OrderAddressWriterTest extends Unit
 
         $orderAddressWriter = new OrderAddressWriter(
             $this->sprykerOrderAddressWriterMock,
-            [ $this->orderAddressExpanderPluginMock ]
+            [$this->orderAddressExpanderPluginMock],
         );
 
         $this->sprykerOrderAddressWriterMock
@@ -94,7 +94,7 @@ class OrderAddressWriterTest extends Unit
     {
         $orderAddressWriter = new OrderAddressWriter(
             $this->sprykerOrderAddressWriterMock,
-            []
+            [],
         );
 
         $this->sprykerOrderAddressWriterMock

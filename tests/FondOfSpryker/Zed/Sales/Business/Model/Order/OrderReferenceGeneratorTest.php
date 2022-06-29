@@ -7,7 +7,6 @@ use FondOfSpryker\Shared\Sales\SalesConstants;
 use FondOfSpryker\Zed\Sales\SalesConfig;
 use Generated\Shared\Transfer\QuoteTransfer;
 use Generated\Shared\Transfer\SequenceNumberSettingsTransfer;
-use Spryker\Shared\Kernel\Store;
 use Spryker\Zed\Sales\Dependency\Facade\SalesToSequenceNumberInterface;
 
 class OrderReferenceGeneratorTest extends Unit
@@ -18,14 +17,14 @@ class OrderReferenceGeneratorTest extends Unit
     protected $sequenceNumberFacadeMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Shared\Kernel\Store
-     */
-    protected $storeMock;
-
-    /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\Sales\SalesConfig
      */
     protected $configMock;
+
+    /**
+     * @var string
+     */
+    protected $storeName;
 
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\Generated\Shared\Transfer\QuoteTransfer
@@ -48,9 +47,7 @@ class OrderReferenceGeneratorTest extends Unit
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->storeMock = $this->getMockBuilder(Store::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->storeName = 'FOO';
 
         $this->configMock = $this->getMockBuilder(SalesConfig::class)
             ->disableOriginalConstructor()
@@ -62,57 +59,8 @@ class OrderReferenceGeneratorTest extends Unit
 
         $this->orderReferenceGenerator = new OrderReferenceGenerator(
             $this->sequenceNumberFacadeMock,
-            $this->storeMock,
-            $this->configMock
-        );
-    }
-
-    /**
-     * @return void
-     */
-    public function testGenerateOrderReferenceWithoutOffset(): void
-    {
-        $storeName = 'STORE';
-        $referencePrefix = 'PREFIX';
-        $referenceEnvironmentPrefix = 'DEV';
-        $sequenceNumberPrefix = sprintf('%s-%s-', $referencePrefix, $referenceEnvironmentPrefix);
-        $orderReference = sprintf('%s-1', $sequenceNumberPrefix);
-
-        $this->storeMock->expects($this->atLeastOnce())
-            ->method('getStoreName')
-            ->willReturn($storeName);
-
-        $this->configMock->expects($this->atLeastOnce())
-            ->method('getReferencePrefix')
-            ->willReturn($referencePrefix);
-
-        $this->configMock->expects($this->atLeastOnce())
-            ->method('getUseSeparatorToConnectPrefixToOrderNumber')
-            ->willReturn(true);
-
-        $this->configMock->expects($this->atLeastOnce())
-            ->method('getReferenceEnvironmentPrefix')
-            ->willReturn($referenceEnvironmentPrefix);
-
-        $this->configMock->expects($this->atLeastOnce())
-            ->method('getReferenceOffset')
-            ->willReturn(null);
-
-        $this->sequenceNumberFacadeMock->expects($this->atLeastOnce())
-            ->method('generate')
-            ->with(
-                $this->callback(
-                    static function (SequenceNumberSettingsTransfer $sequenceNumberSettingsTransfer) use ($sequenceNumberPrefix) {
-                        return $sequenceNumberSettingsTransfer->getPrefix() === $sequenceNumberPrefix
-                        && $sequenceNumberSettingsTransfer->getName() === SalesConstants::REFERENCE_NAME_VALUE
-                        && $sequenceNumberSettingsTransfer->getOffset() === null;
-                    }
-                )
-            )->willReturn($orderReference);
-
-        $this->assertEquals(
-            $orderReference,
-            $this->orderReferenceGenerator->generateOrderReference($this->quoteTransferMock)
+            $this->configMock,
+            $this->storeName,
         );
     }
 
@@ -121,48 +69,43 @@ class OrderReferenceGeneratorTest extends Unit
      */
     public function testGenerateOrderReference(): void
     {
-        $storeName = 'STORE';
         $referencePrefix = 'PREFIX';
         $referenceEnvironmentPrefix = 'DEV';
         $referenceOffset = 5;
         $sequenceNumberPrefix = sprintf('%s-%s-', $referencePrefix, $referenceEnvironmentPrefix);
         $orderReference = sprintf('%s-000001', $sequenceNumberPrefix);
 
-        $this->storeMock->expects($this->atLeastOnce())
-            ->method('getStoreName')
-            ->willReturn($storeName);
-
-        $this->configMock->expects($this->atLeastOnce())
+        $this->configMock->expects(static::atLeastOnce())
             ->method('getReferencePrefix')
             ->willReturn($referencePrefix);
 
-        $this->configMock->expects($this->atLeastOnce())
+        $this->configMock->expects(static::atLeastOnce())
             ->method('getUseSeparatorToConnectPrefixToOrderNumber')
             ->willReturn(true);
 
-        $this->configMock->expects($this->atLeastOnce())
+        $this->configMock->expects(static::atLeastOnce())
             ->method('getReferenceEnvironmentPrefix')
             ->willReturn($referenceEnvironmentPrefix);
 
-        $this->configMock->expects($this->atLeastOnce())
+        $this->configMock->expects(static::atLeastOnce())
             ->method('getReferenceOffset')
             ->willReturn($referenceOffset);
 
-        $this->sequenceNumberFacadeMock->expects($this->atLeastOnce())
+        $this->sequenceNumberFacadeMock->expects(static::atLeastOnce())
             ->method('generate')
             ->with(
-                $this->callback(
+                static::callback(
                     static function (SequenceNumberSettingsTransfer $sequenceNumberSettingsTransfer) use ($sequenceNumberPrefix, $referenceOffset) {
                         return $sequenceNumberSettingsTransfer->getPrefix() === $sequenceNumberPrefix
                             && $sequenceNumberSettingsTransfer->getName() === SalesConstants::REFERENCE_NAME_VALUE
                             && $sequenceNumberSettingsTransfer->getOffset() === $referenceOffset;
-                    }
-                )
+                    },
+                ),
             )->willReturn($orderReference);
 
-        $this->assertEquals(
+        static::assertEquals(
             $orderReference,
-            $this->orderReferenceGenerator->generateOrderReference($this->quoteTransferMock)
+            $this->orderReferenceGenerator->generateOrderReference($this->quoteTransferMock),
         );
     }
 
@@ -171,48 +114,43 @@ class OrderReferenceGeneratorTest extends Unit
      */
     public function testGenerateOrderReferenceWithoutSeparatorBetweenPrefixAndNumber(): void
     {
-        $storeName = 'STORE';
         $referencePrefix = 'PREFIX';
         $referenceEnvironmentPrefix = 'DEV';
         $referenceOffset = 5;
         $sequenceNumberPrefix = sprintf('%s-%s', $referencePrefix, $referenceEnvironmentPrefix);
         $orderReference = sprintf('%s000001', $sequenceNumberPrefix);
 
-        $this->storeMock->expects($this->atLeastOnce())
-            ->method('getStoreName')
-            ->willReturn($storeName);
-
-        $this->configMock->expects($this->atLeastOnce())
+        $this->configMock->expects(static::atLeastOnce())
             ->method('getReferencePrefix')
             ->willReturn($referencePrefix);
 
-        $this->configMock->expects($this->atLeastOnce())
+        $this->configMock->expects(static::atLeastOnce())
             ->method('getUseSeparatorToConnectPrefixToOrderNumber')
             ->willReturn(false);
 
-        $this->configMock->expects($this->atLeastOnce())
+        $this->configMock->expects(static::atLeastOnce())
             ->method('getReferenceEnvironmentPrefix')
             ->willReturn($referenceEnvironmentPrefix);
 
-        $this->configMock->expects($this->atLeastOnce())
+        $this->configMock->expects(static::atLeastOnce())
             ->method('getReferenceOffset')
             ->willReturn($referenceOffset);
 
-        $this->sequenceNumberFacadeMock->expects($this->atLeastOnce())
+        $this->sequenceNumberFacadeMock->expects(static::atLeastOnce())
             ->method('generate')
             ->with(
-                $this->callback(
+                static::callback(
                     static function (SequenceNumberSettingsTransfer $sequenceNumberSettingsTransfer) use ($sequenceNumberPrefix, $referenceOffset) {
                         return $sequenceNumberSettingsTransfer->getPrefix() === $sequenceNumberPrefix
                             && $sequenceNumberSettingsTransfer->getName() === SalesConstants::REFERENCE_NAME_VALUE
                             && $sequenceNumberSettingsTransfer->getOffset() === $referenceOffset;
-                    }
-                )
+                    },
+                ),
             )->willReturn($orderReference);
 
-        $this->assertEquals(
+        static::assertEquals(
             $orderReference,
-            $this->orderReferenceGenerator->generateOrderReference($this->quoteTransferMock)
+            $this->orderReferenceGenerator->generateOrderReference($this->quoteTransferMock),
         );
     }
 }

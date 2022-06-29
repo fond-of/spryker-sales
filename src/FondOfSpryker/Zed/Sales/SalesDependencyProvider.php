@@ -5,9 +5,14 @@ namespace FondOfSpryker\Zed\Sales;
 use Spryker\Zed\Kernel\Container;
 use Spryker\Zed\Sales\SalesDependencyProvider as SprykerSalesDependencyProvider;
 
+/**
+ * @codeCoverageIgnore
+ */
 class SalesDependencyProvider extends SprykerSalesDependencyProvider
 {
-    public const PLUGINS_SALES_ORDER_ADDRESS_HYDRATION = 'PLUGINS_SALES_ORDER_ADDRESS_HYDRATION';
+    /**
+     * @var string
+     */
     public const PLUGINS_ORDER_ADDRESS_EXPANDER = 'PLUGINS_ORDER_ADDRESS_EXPANDER';
 
     /**
@@ -19,26 +24,7 @@ class SalesDependencyProvider extends SprykerSalesDependencyProvider
     {
         $container = parent::provideBusinessLayerDependencies($container);
 
-        $container = $this->addSalesOrderAddressHydrationPlugins($container);
-        $container = $this->addOrderAddressExpanderPlugins($container);
-
-        return $container;
-    }
-
-    /**
-     * @param \Spryker\Zed\Kernel\Container $container
-     *
-     * @return \Spryker\Zed\Kernel\Container
-     */
-    protected function addSalesOrderAddressHydrationPlugins(Container $container): Container
-    {
-        $self = $this;
-
-        $container[static::PLUGINS_SALES_ORDER_ADDRESS_HYDRATION] = static function () use ($self) {
-            return $self->getSalesOrderAddressHydrationPlugins();
-        };
-
-        return $container;
+        return $this->addOrderAddressExpanderPlugins($container);
     }
 
     /**
@@ -51,24 +37,16 @@ class SalesDependencyProvider extends SprykerSalesDependencyProvider
         $self = $this;
 
         $container[static::PLUGINS_ORDER_ADDRESS_EXPANDER] = static function () use ($self) {
-            return $self->getOrderAddressExpanderPlguins();
+            return $self->getOrderAddressExpanderPlugins();
         };
 
         return $container;
     }
 
     /**
-     * @return \FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\SalesOrderAddressHydrationPluginInterface[]
+     * @return array<\FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\OrderAddressExpanderPluginInterface>
      */
-    protected function getSalesOrderAddressHydrationPlugins(): array
-    {
-        return [];
-    }
-
-    /**
-     * @return \FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\OrderAddressExpanderPluginInterface[]
-     */
-    protected function getOrderAddressExpanderPlguins(): array
+    protected function getOrderAddressExpanderPlugins(): array
     {
         return [];
     }

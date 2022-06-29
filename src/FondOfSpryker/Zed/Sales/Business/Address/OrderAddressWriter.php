@@ -8,7 +8,7 @@ use Spryker\Zed\Sales\Business\Address\OrderAddressWriterInterface;
 class OrderAddressWriter implements OrderAddressWriterInterface
 {
     /**
-     * @var \FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\OrderAddressExpanderPluginInterface[]
+     * @var array<\FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\OrderAddressExpanderPluginInterface>
      */
     protected $orderAddressExpanderPlugins;
 
@@ -19,7 +19,7 @@ class OrderAddressWriter implements OrderAddressWriterInterface
 
     /**
      * @param \Spryker\Zed\Sales\Business\Address\OrderAddressWriterInterface $orderAddressWriter
-     * @param \FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\OrderAddressExpanderPluginInterface[] $orderAddressExpanderPlugins
+     * @param array<\FondOfSpryker\Zed\SalesExtension\Dependency\Plugin\OrderAddressExpanderPluginInterface> $orderAddressExpanderPlugins
      */
     public function __construct(
         OrderAddressWriterInterface $orderAddressWriter,
@@ -43,6 +43,12 @@ class OrderAddressWriter implements OrderAddressWriterInterface
         return $this->orderAddressWriter->create($addressTransfer);
     }
 
+    /**
+     * @param \Generated\Shared\Transfer\AddressTransfer $addressTransfer
+     * @param int $idAddress
+     *
+     * @return bool
+     */
     public function update(AddressTransfer $addressTransfer, int $idAddress): bool
     {
         return $this->orderAddressWriter->update($addressTransfer, $idAddress);
