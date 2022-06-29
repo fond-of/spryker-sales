@@ -8,6 +8,12 @@
       "email": "daniel-rose@gmx.de"
     }
   ],
+  "scripts": {
+    "ci": "make ci",
+    "codeception": "make codeception",
+    "phpcs": "make phpcs",
+    "phpstan": "make phpstan"
+  },
   "require": {
     "php": ">=7.3",
     "spryker/sales": "^11.0.0",
