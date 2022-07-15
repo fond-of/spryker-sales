@@ -29,11 +29,13 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
             $this->createReferenceGenerator(),
             $this->getConfig(),
             $this->getLocaleQueryContainer(),
-            $this->getStore(),
             $this->getOrderExpanderPreSavePlugins(),
             $this->createSalesOrderSaverPluginExecutor(),
             $this->createSalesOrderItemMapper(),
             $this->getOrderPostSavePlugins(),
+            $this->getStoreFacade(),
+            $this->getLocaleFacade(),
+            $this->createOrderStateMachineResolver(),
             $this->getSalesOrderAddressHydrationPlugins()
         );
     }
@@ -53,7 +55,7 @@ class SalesBusinessFactory extends SprykerSalesBusinessFactory
     {
         return new OrderReferenceGenerator(
             $this->getSequenceNumberFacade(),
-            $this->getStore(),
+            $this->getStoreFacade(),
             $this->getConfig()
         );
     }

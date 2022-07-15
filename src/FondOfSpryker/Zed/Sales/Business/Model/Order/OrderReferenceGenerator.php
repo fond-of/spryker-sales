@@ -6,8 +6,8 @@ use FondOfSpryker\Shared\Sales\SalesConstants;
 use FondOfSpryker\Zed\Sales\SalesConfig;
 use Generated\Shared\Transfer\QuoteTransfer;
 use Generated\Shared\Transfer\SequenceNumberSettingsTransfer;
-use Spryker\Shared\Kernel\Store;
 use Spryker\Zed\Sales\Dependency\Facade\SalesToSequenceNumberInterface;
+use Spryker\Zed\Sales\Dependency\Facade\SalesToStoreInterface;
 
 class OrderReferenceGenerator implements OrderReferenceGeneratorInterface
 {
@@ -17,9 +17,9 @@ class OrderReferenceGenerator implements OrderReferenceGeneratorInterface
     protected $sequenceNumberFacade;
 
     /**
-     * @var \Spryker\Shared\Kernel\Store
+     * @var \Spryker\Zed\Sales\Dependency\Facade\SalesToStoreInterface
      */
-    protected $store;
+    protected $storeFacade;
 
     /**
      * @var \FondOfSpryker\Zed\Sales\SalesConfig
@@ -28,16 +28,16 @@ class OrderReferenceGenerator implements OrderReferenceGeneratorInterface
 
     /**
      * @param \Spryker\Zed\Sales\Dependency\Facade\SalesToSequenceNumberInterface $sequenceNumberFacade
-     * @param \Spryker\Shared\Kernel\Store $store
+     * @param \Spryker\Zed\Sales\Dependency\Facade\SalesToStoreInterface $storeFacade
      * @param \FondOfSpryker\Zed\Sales\SalesConfig $config
      */
     public function __construct(
         SalesToSequenceNumberInterface $sequenceNumberFacade,
-        Store $store,
+        SalesToStoreInterface $storeFacade,
         SalesConfig $config
     ) {
         $this->sequenceNumberFacade = $sequenceNumberFacade;
-        $this->store = $store;
+        $this->storeFacade = $storeFacade;
         $this->config = $config;
     }
 
@@ -75,7 +75,7 @@ class OrderReferenceGenerator implements OrderReferenceGeneratorInterface
     protected function getSequenceNumberPrefix(): string
     {
         $sequenceNumberPrefixParts = [
-            $this->store->getStoreName(),
+            $this->storeFacade->getCurrentStore()->getName(),
         ];
 
         $referencePrefix = $this->config->getReferencePrefix();

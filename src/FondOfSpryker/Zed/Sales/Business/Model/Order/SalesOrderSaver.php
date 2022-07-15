@@ -9,8 +9,11 @@ use Spryker\Zed\Locale\Persistence\LocaleQueryContainerInterface;
 use Spryker\Zed\Sales\Business\Model\Order\OrderReferenceGeneratorInterface;
 use Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaver as SprykerSalesOrderSaver;
 use Spryker\Zed\Sales\Business\Model\Order\SalesOrderSaverPluginExecutorInterface;
+use Spryker\Zed\Sales\Business\StateMachineResolver\OrderStateMachineResolverInterface;
 use Spryker\Zed\Sales\Dependency\Facade\SalesToCountryInterface;
+use Spryker\Zed\Sales\Dependency\Facade\SalesToLocaleInterface;
 use Spryker\Zed\Sales\Dependency\Facade\SalesToOmsInterface;
+use Spryker\Zed\Sales\Dependency\Facade\SalesToStoreInterface;
 use Spryker\Zed\Sales\Persistence\Propel\Mapper\SalesOrderItemMapperInterface;
 use Spryker\Zed\Sales\SalesConfig;
 
@@ -40,11 +43,13 @@ class SalesOrderSaver extends SprykerSalesOrderSaver
         OrderReferenceGeneratorInterface $orderReferenceGenerator,
         SalesConfig $salesConfiguration,
         LocaleQueryContainerInterface $localeQueryContainer,
-        Store $store,
         $orderExpanderPreSavePlugins,
         SalesOrderSaverPluginExecutorInterface $salesOrderSaverPluginExecutor,
         SalesOrderItemMapperInterface $salesOrderItemMapper,
         array $orderPostSavePlugins,
+        SalesToStoreInterface $storeFacade,
+        SalesToLocaleInterface $localeFacade,
+        OrderStateMachineResolverInterface $orderStateMachineResolver,
         array $salesOrderAddressHydrationPlugins
     ) {
         parent::__construct(
@@ -53,11 +58,13 @@ class SalesOrderSaver extends SprykerSalesOrderSaver
             $orderReferenceGenerator,
             $salesConfiguration,
             $localeQueryContainer,
-            $store,
             $orderExpanderPreSavePlugins,
             $salesOrderSaverPluginExecutor,
             $salesOrderItemMapper,
-            $orderPostSavePlugins
+            $orderPostSavePlugins,
+            $storeFacade,
+            $localeFacade,
+            $orderStateMachineResolver
         );
 
         $this->salesOrderAddressHydrationPlugins = $salesOrderAddressHydrationPlugins;
